@@ -1,4 +1,5 @@
 // Core data types for Sentium UI
+import { PersonalityType } from "./brain-simulation";
 
 // Timestamp type alias for consistency
 export type ISOTimestamp = string; // ISO 8601 format: "2023-01-01T09:40:00.000Z"
@@ -188,4 +189,23 @@ export interface BrainState {
   uptime: number;        // seconds
   lastActivity: ISOTimestamp;
   variables: Record<string, number>;
+}
+
+// Brain instance for selection
+export interface Brain {
+  id: string;
+  name: string;
+  description: string;
+  personality: PersonalityType;
+  color: string;
+  accentColor: string;
+  status: 'online' | 'offline' | 'thinking' | 'dreaming';
+  lastActivity: ISOTimestamp;
+  thoughtCount: number;
+  memoryCount: number;
+  uptime: number; // seconds
+  tags: string[];
+  icon?: string; // Lucide icon name
+  capabilities: string[];
+  currentState: Partial<BrainState>;
 }

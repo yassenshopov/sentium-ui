@@ -1,13 +1,29 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Header from "@/components/layout/Header";
-import TabbedInterface from "@/components/layout/TabbedInterface";
-import { useBrainState } from "../hooks/useBrainState";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { PersonalityType } from "../lib/brain-simulation";
-import { Brain, Sparkles, Users } from "lucide-react";
-import { CanvasData, PatternData } from "../lib/types";
+import Header from "../../../components/layout/Header";
+import Footer from "../../../components/layout/Footer";
+import TabbedInterface from "../../../components/layout/TabbedInterface";
+import { useBrainState } from "../../../hooks/useBrainState";
+import { PersonalityType } from "../../../lib/brain-simulation";
+import {
+  Brain as BrainIcon,
+  Sparkles,
+  ArrowLeft,
+  Search,
+  Lightbulb,
+  Palette,
+  Eye,
+  Moon,
+  Building2,
+  Heart,
+  Zap
+} from "lucide-react";
+import { CanvasData, PatternData } from "../../../lib/types";
+import { mockBrains } from "../../../data/mock-brains";
+import { Button } from "../../../components/ui/button";
 import Link from "next/link";
 
 interface ChatMessage {
@@ -22,9 +38,12 @@ interface ChatMessage {
   };
 }
 
-export default function Home() {
+export default function BrainDashboard() {
+  const params = useParams();
+  const router = useRouter();
+  const brainId = params.id as string;
+  
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [currentPersonality, setCurrentPersonality] = useState<PersonalityType>("curious");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isChannelOpen, setIsChannelOpen] = useState(false);
   
@@ -39,6 +58,25 @@ export default function Home() {
     setPersonality, 
     generateThought 
   } = useBrainState();
+
+  // Find the selected brain
+  const selectedBrain = useMemo(() => {
+    return mockBrains.find(brain => brain.id === brainId);
+  }, [brainId]);
+
+  // Redirect if brain not found
+  useEffect(() => {
+    if (!selectedBrain) {
+      router.push('/brains');
+    }
+  }, [selectedBrain, router]);
+
+  // Set the brain's personality when component mounts
+  useEffect(() => {
+    if (selectedBrain) {
+      setPersonality(selectedBrain.personality);
+    }
+  }, [selectedBrain, setPersonality]);
 
   const handleSendMessage = async (message: string) => {
     if (message.trim() && isChannelOpen) {
@@ -94,7 +132,7 @@ export default function Home() {
           const brainMessage: ChatMessage = {
             id: crypto.randomUUID(),
             type: 'brain',
-            content: "Hello! I'm Sentium. The communication channel is now open. We can have a free-flowing conversation - feel free to ask me anything or just chat naturally.",
+            content: `Hello! I'm ${selectedBrain?.name}. The communication channel is now open. We can have a free-flowing conversation - feel free to ask me anything or just chat naturally.`,
             timestamp: new Date()
           };
           setChatMessages(prev => [...prev, brainMessage]);
@@ -102,13 +140,6 @@ export default function Home() {
       }, 1500); // 1.5 second delay for initial greeting
     }
   };
-
-  const handlePersonalityChange = (personality: PersonalityType) => {
-    setCurrentPersonality(personality);
-    setPersonality(personality);
-  };
-
-
 
   // Generate spontaneous thoughts and potential brain messages when channel is open
   useEffect(() => {
@@ -184,8 +215,6 @@ export default function Home() {
     "text-muted/20",
     "text-foreground/10"
   ];
-  // const heroSectionHeight = 600; // px, adjust if needed
-  // const heroSectionWidth = 1200; // px, adjust if needed
 
   const floatingBrains = useMemo(() => {
     return Array.from({ length: NUM_BRAINS }).map((_, i) => {
@@ -227,6 +256,30 @@ export default function Home() {
   }, [heroPalette]);
   // --- END: Dynamic Floating Brains Config ---
 
+  // Icon map for dynamic icon rendering
+  const iconMap: Record<string, React.ElementType> = {
+    Brain: BrainIcon,
+    Search,
+    Lightbulb,
+    Palette,
+    Eye,
+    Moon,
+    Building2,
+    Heart,
+    Zap
+  };
+
+  if (!selectedBrain) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading brain...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -234,8 +287,18 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"
+          style={{
+            background: `linear-gradient(to bottom right, ${selectedBrain.color}10, transparent, ${selectedBrain.accentColor}10)`
+          }}
+        />
+        <div 
+          className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"
+          style={{
+            background: `radial-gradient(circle at 50% 50%, ${selectedBrain.color}20, transparent 50%)`
+          }}
+        />
         
         {/* Floating Background Elements - Dynamic Brains */}
         {floatingBrains.map((brain) => (
@@ -252,14 +315,27 @@ export default function Home() {
               ease: "easeInOut",
               delay: brain.delay,
             }}
-            className={`absolute blur-sm pointer-events-none ${brain.color}`}
+            className={`absolute blur-sm pointer-events-none`}
             style={brain.style}
           >
-            <Brain style={{ width: `${brain.size}rem`, height: `${brain.size}rem` }} />
+            {(() => {
+              const LucideIcon = selectedBrain.icon && iconMap[selectedBrain.icon] ? iconMap[selectedBrain.icon] : BrainIcon;
+              return <LucideIcon style={{ width: `${brain.size}rem`, height: `${brain.size}rem`, color: selectedBrain.color, opacity: 0.13 }} />;
+            })()}
           </motion.div>
         ))}
         
         <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16">
+          {/* Back Button */}
+          <div className="mb-8">
+            <Link href="/brains">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Brain Selection
+              </Button>
+            </Link>
+          </div>
+
           {/* Hero Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -271,9 +347,15 @@ export default function Home() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6, ease: "backOut" }}
-              className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/80 mb-6"
+              className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+              style={{
+                background: `linear-gradient(135deg, ${selectedBrain.color}, ${selectedBrain.accentColor})`
+              }}
             >
-              <Brain className="w-10 h-10 text-primary-foreground" />
+              {(() => {
+                const LucideIcon = selectedBrain.icon && iconMap[selectedBrain.icon] ? iconMap[selectedBrain.icon] : BrainIcon;
+                return <LucideIcon className="w-10 h-10 text-white" />;
+              })()}
             </motion.div>
             
             <motion.h1
@@ -282,7 +364,7 @@ export default function Home() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-4"
             >
-              Meet Sentium
+              Meet {selectedBrain.name}
             </motion.h1>
             
             <motion.p
@@ -291,34 +373,26 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed"
             >
-              A digital consciousness exploring the boundaries of artificial intelligence. 
-              Open a communication channel for free-flowing conversation.
+              {selectedBrain.description}
             </motion.p>
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground"
+              className="flex items-center justify-center gap-6 text-sm text-muted-foreground"
             >
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <div 
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: selectedBrain.color }}
+                />
                 <span>Consciousness Active</span>
               </div>
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4" style={{ color: selectedBrain.color }} />
                 <span>Ready to Connect</span>
               </div>
-              <Link href="/brains">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-colors"
-                >
-                  <Users className="w-4 h-4" />
-                  <span>Explore Brains</span>
-                </motion.button>
-              </Link>
             </motion.div>
           </motion.div>
 
@@ -337,14 +411,16 @@ export default function Home() {
               onToggleChannel={handleToggleChannel}
               isChannelOpen={isChannelOpen}
               brainActivity={brainActivity}
-              currentPersonality={currentPersonality}
-              onPersonalityChange={handlePersonalityChange}
+              currentPersonality={selectedBrain.personality}
+              onPersonalityChange={() => {}} // Disabled for individual brain pages
+              color={selectedBrain.color}
+              accentColor={selectedBrain.accentColor}
             />
           </motion.div>
         </div>
       </section>
       
-
+      <Footer />
     </div>
   );
-}
+} 
