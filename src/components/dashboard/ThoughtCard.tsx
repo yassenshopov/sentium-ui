@@ -14,19 +14,13 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
-  Palette,
-  Eye,
-  Network,
-  Radio,
-  Layers
+  Palette
 } from "lucide-react";
 
 interface ThoughtCardProps {
   thought: Thought;
   viewStyle?: 'streaming' | 'neural' | 'waveform' | 'cards';
 }
-
-type ViewStyle = 'streaming' | 'neural' | 'waveform' | 'cards';
 
 const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streaming' }) => {
   const [isExpanded, setIsExpanded] = useState(false);

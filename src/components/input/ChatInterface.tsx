@@ -8,13 +8,12 @@ import {
   User, 
   Brain, 
   Clock, 
-  Sparkles,
   MessageCircle,
   Bot,
   Wifi,
   WifiOff
 } from "lucide-react";
-import { BrainActivity } from "../../lib/types";
+import { BrainState, CanvasData, PatternData } from "../../lib/types";
 import VisualRenderer from "../ui/visual-renderer";
 
 interface ChatMessage {
@@ -24,7 +23,7 @@ interface ChatMessage {
   timestamp: Date;
   visual?: {
     type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
-    data: string | any;
+    data: string | CanvasData | PatternData;
     description?: string;
   };
 }
@@ -33,7 +32,7 @@ interface ChatInterfaceProps {
   messages: ChatMessage[];
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
-  brainState: any;
+  brainState: BrainState;
   onToggleChannel: () => void;
   isChannelOpen: boolean;
 }

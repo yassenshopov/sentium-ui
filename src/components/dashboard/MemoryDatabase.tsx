@@ -6,10 +6,7 @@ import { Button } from "../ui/button";
 import { 
   Database, 
   Search,
-  Filter,
-  Clock,
   Star,
-  Link,
   Eye,
   TrendingUp,
   Brain,
@@ -17,7 +14,7 @@ import {
   Layers,
   Zap
 } from "lucide-react";
-import { BrainActivity } from "../../lib/types";
+import { BrainActivity, CanvasData, PatternData } from "../../lib/types";
 import VisualRenderer from "../ui/visual-renderer";
 
 interface MemoryDatabaseProps {
@@ -33,8 +30,16 @@ interface MemoryNode {
   timestamp: Date;
   accessCount: number;
   lastAccessed: Date;
-  visual?: any;
-  metadata?: any;
+  visual?: {
+    type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
+    data: string | CanvasData | PatternData;
+    description?: string;
+  };
+  metadata?: {
+    energy?: number;
+    focus?: number;
+    mood?: number;
+  };
 }
 
 const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {

@@ -37,12 +37,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
     }
   }, [brainState.energy]);
 
-  const getMoodColor = (mood: number) => {
-    if (mood > 50) return "text-green-500";
-    if (mood > 0) return "text-yellow-500";
-    if (mood > -50) return "text-orange-500";
-    return "text-red-500";
-  };
+
 
   const getMoodIcon = (mood: number) => {
     if (mood > 50) return <TrendingUp className="w-4 h-4" />;

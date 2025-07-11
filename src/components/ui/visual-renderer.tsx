@@ -176,7 +176,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     
     for (let x = 0; x < canvasWidth; x += gridSize) {
       for (let y = 0; y < canvasHeight; y += gridSize) {
-        if (Math.random() > 0.5) {
+        if (Math.random() > (1 - complexity / 100)) {
           ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
           ctx.fillRect(x, y, gridSize - 2, gridSize - 2);
         }

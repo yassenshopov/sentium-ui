@@ -10,7 +10,6 @@ import {
   Database, 
   Sparkles, 
   Clock,
-  Filter,
   Search
 } from "lucide-react";
 import ThoughtCard from "./ThoughtCard";
@@ -188,7 +187,7 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
                         id: activity.id,
                         content: activity.content,
                         timestamp: activity.timestamp,
-                        type: activity.subtype as any,
+                        type: activity.subtype as 'reflection' | 'analysis' | 'wonder' | 'realization' | 'question',
                         metadata: activity.metadata,
                         visual: activity.visual
                       }}

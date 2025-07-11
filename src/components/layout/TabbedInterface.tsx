@@ -7,16 +7,16 @@ import {
   Brain, 
   Database,
   Activity,
-  Sparkles,
   Settings,
-  Wifi
+  Wifi,
+  Sparkles
 } from "lucide-react";
 import ChatInterface from "../input/ChatInterface";
 import ThoughtProcessPanel from "../dashboard/ThoughtProcessPanel";
 import MemoryDatabase from "../dashboard/MemoryDatabase";
 import StatePanel from "../dashboard/StatePanel";
 import PersonalitySelector from "./PersonalitySelector";
-import { BrainActivity } from "../../lib/types";
+import { BrainActivity, BrainState, CanvasData, PatternData } from "../../lib/types";
 import { PersonalityType } from "../../lib/brain-simulation";
 
 interface ChatMessage {
@@ -26,7 +26,7 @@ interface ChatMessage {
   timestamp: Date;
   visual?: {
     type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
-    data: string | any;
+    data: string | CanvasData | PatternData;
     description?: string;
   };
 }
@@ -35,7 +35,7 @@ interface TabbedInterfaceProps {
   chatMessages: ChatMessage[];
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
-  brainState: any;
+  brainState: BrainState;
   onToggleChannel: () => void;
   isChannelOpen: boolean;
   brainActivity: BrainActivity[];
@@ -141,7 +141,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                 id: activity.id,
                 content: activity.content,
                 timestamp: activity.timestamp,
-                type: activity.subtype as any,
+                type: activity.subtype as 'reflection' | 'analysis' | 'wonder' | 'realization' | 'question',
                 metadata: activity.metadata,
                 visual: activity.visual
               }))}

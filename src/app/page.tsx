@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import TabbedInterface from "@/components/layout/TabbedInterface";
 import { useBrainState } from "../hooks/useBrainState";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { PersonalityType } from "../lib/brain-simulation";
-import { Brain, Sparkles, Zap } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Brain, Sparkles } from "lucide-react";
+import { CanvasData, PatternData } from "../lib/types";
 
 interface ChatMessage {
   id: string;
@@ -16,7 +16,7 @@ interface ChatMessage {
   timestamp: Date;
   visual?: {
     type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
-    data: string | any;
+    data: string | CanvasData | PatternData;
     description?: string;
   };
 }
@@ -26,7 +26,6 @@ export default function Home() {
   const [currentPersonality, setCurrentPersonality] = useState<PersonalityType>("curious");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isChannelOpen, setIsChannelOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const { 
     brainState, 
     brainActivity, 

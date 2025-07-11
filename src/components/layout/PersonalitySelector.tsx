@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { motion } from "framer-motion";
-import { PersonalityType, PERSONALITY_PRESETS } from "../../lib/brain-simulation";
+import { PersonalityType } from "../../lib/brain-simulation";
 import { Brain, Sparkles, Shield, Zap } from "lucide-react";
 
 interface PersonalitySelectorProps {

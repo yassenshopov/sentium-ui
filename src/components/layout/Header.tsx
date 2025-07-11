@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -17,11 +18,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-4">
         {/* Left: Logo/Title */}
         <span className="flex items-center gap-2 select-none">
-          <img
+          <Image
             src="/sentium-logo.svg"
             alt="Sentium UI Logo"
+            width={40}
+            height={40}
             className="h-10 w-10"
-            style={{ display: "inline-block" }}
           />
           <span className="text-xl font-bold tracking-tight text-foreground">Sentium UI</span>
         </span>
@@ -61,11 +63,12 @@ export default function Header() {
             <SheetContent side="right" className="w-64 p-0 flex flex-col border-l border-border bg-background">
               <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                 <span className="flex items-center gap-2">
-                  <img
+                  <Image
                     src="/sentium-logo.svg"
                     alt="Sentium UI Logo"
+                    width={36}
+                    height={36}
                     className="h-9 w-9"
-                    style={{ display: "inline-block" }}
                   />
                   <span className="text-lg font-bold">Sentium UI</span>
                 </span>

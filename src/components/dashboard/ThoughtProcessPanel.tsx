@@ -12,8 +12,7 @@ import {
   Eye,
   Network,
   Radio,
-  Layers,
-  RefreshCw
+  Layers
 } from "lucide-react";
 
 interface ThoughtProcessPanelProps {
