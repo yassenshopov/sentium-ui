@@ -264,7 +264,7 @@ export class BrainSimulation {
     this.updateVisualGeneratorMood(currentState.mood);
     
     // Decide if this thought should include visual content
-    const shouldIncludeVisual = this.shouldIncludeVisual('thought', content);
+    const shouldIncludeVisual = this.shouldIncludeVisual('thought', content, thoughtType);
     const visual = shouldIncludeVisual ? this.generateVisualContent('thought', content) : undefined;
     
     const thought: Thought = {
@@ -639,15 +639,16 @@ export class BrainSimulation {
   private generateLandscape(): string { return this.getTemplateValue('landscape'); }
 
   // Decide if a thought should include visual content
-  private shouldIncludeVisual(type: 'thought' | 'memory' | 'response', content: string): boolean {
+  private shouldIncludeVisual(type: 'thought' | 'memory' | 'response', content: string, thoughtType?: Thought['type']): boolean {
     const lowerContent = content.toLowerCase();
     
     // Higher chance for creative thoughts
     if (type === 'thought') {
-      const thoughtType = this.selectThoughtType();
-      if (thoughtType === 'realization') return Math.random() > 0.3;
-      if (thoughtType === 'reflection') return Math.random() > 0.6;
-      if (thoughtType === 'wonder') return Math.random() > 0.7;
+      // Use the provided thoughtType if available, otherwise fall back to selecting one
+      const finalThoughtType = thoughtType || this.selectThoughtType();
+      if (finalThoughtType === 'realization') return Math.random() > 0.3;
+      if (finalThoughtType === 'reflection') return Math.random() > 0.6;
+      if (finalThoughtType === 'wonder') return Math.random() > 0.7;
     }
     
     // Content-based triggers
