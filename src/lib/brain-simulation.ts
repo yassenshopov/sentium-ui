@@ -803,6 +803,11 @@ export class BrainSimulation {
     return { ...this.baseState };
   }
 
+  // Set the brain state (for initialization or reset)
+  public setState(newState: Partial<BrainState>): void {
+    this.baseState = { ...this.baseState, ...newState };
+  }
+
   // Get specific collections
   public getThoughts(): Thought[] {
     return [...this.thoughts];

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Header from "@/components/layout/Header";
 import TabbedInterface from "@/components/layout/TabbedInterface";
 import { useBrainState } from "../hooks/useBrainState";
@@ -163,6 +163,69 @@ export default function Home() {
     };
   }, [isChannelOpen, generateThought]);
 
+  // Parallax scroll state
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // --- BEGIN: Dynamic Floating Brains Config ---
+  const NUM_BRAINS = 12;
+  const heroPalette = [
+    "text-primary/30",
+    "text-primary/15",
+    "text-secondary/25",
+    "text-secondary/10",
+    "text-accent/20",
+    "text-accent/10",
+    "text-muted/20",
+    "text-foreground/10"
+  ];
+  const heroSectionHeight = 600; // px, adjust if needed
+  const heroSectionWidth = 1200; // px, adjust if needed
+
+  const floatingBrains = useMemo(() => {
+    return Array.from({ length: NUM_BRAINS }).map((_, i) => {
+      // Random position (avoid edges)
+      const top = Math.random() * 70 + 5; // vh, 5-75
+      const left = Math.random() * 80 + 5; // vw, 5-85
+      // Random size
+      const size = Math.random() * 4 + 2; // rem, 2-6
+      // Random color
+      const color = heroPalette[Math.floor(Math.random() * heroPalette.length)];
+      // Random opacity
+      const opacity = Math.random() * 0.4 + 0.3; // 0.3-0.7
+      // Random animation
+      const yMove = Math.random() * 40 + 10; // px, 10-50
+      const duration = Math.random() * 6 + 7; // 7-13s
+      const delay = Math.random() * 5; // 0-5s
+      const rotate = Math.random() * 20 - 10; // -10 to 10 deg
+      const scaleFrom = Math.random() * 0.3 + 0.8; // 0.8-1.1
+      const scaleTo = scaleFrom + Math.random() * 0.3; // up to 0.3 more
+      const parallaxMultiplier = Math.random() * 0.9 + 0.3; // 0.3-1.2 (stronger parallax)
+      return {
+        key: `floating-brain-${i}`,
+        style: {
+          top: `${top}vh`,
+          left: `${left}vw`,
+          opacity,
+        },
+        size,
+        color,
+        yMove,
+        duration,
+        delay,
+        rotate,
+        scaleFrom,
+        scaleTo,
+        parallaxMultiplier,
+      };
+    });
+  }, []);
+  // --- END: Dynamic Floating Brains Config ---
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -173,91 +236,28 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
         
-        {/* Floating Background Elements */}
-        <motion.div
-          animate={{ 
-            y: [0, -30, 0],
-            rotate: [0, 8, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            duration: 8, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-          className="absolute top-16 left-8 opacity-80 blur-sm"
-        >
-          <Brain className="w-20 h-20 text-primary/30" />
-        </motion.div>
+        {/* Floating Background Elements - Dynamic Brains */}
+        {floatingBrains.map((brain) => (
+          <motion.div
+            key={brain.key}
+            animate={{
+              y: [0 + scrollY * brain.parallaxMultiplier, brain.yMove + scrollY * brain.parallaxMultiplier, 0 + scrollY * brain.parallaxMultiplier],
+              rotate: [0, brain.rotate, 0],
+              scale: [brain.scaleFrom, brain.scaleTo, brain.scaleFrom],
+            }}
+            transition={{
+              duration: brain.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: brain.delay,
+            }}
+            className={`absolute blur-sm pointer-events-none ${brain.color}`}
+            style={brain.style}
+          >
+            <Brain style={{ width: `${brain.size}rem`, height: `${brain.size}rem` }} />
+          </motion.div>
+        ))}
         
-        <motion.div
-          animate={{ 
-            y: [0, 25, 0],
-            rotate: [0, -6, 0],
-            scale: [0.8, 1.2, 0.8]
-          }}
-          transition={{ 
-            duration: 10, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 1.5
-          }}
-          className="absolute top-40 right-20 opacity-60 blur-sm"
-        >
-          <Brain className="w-16 h-16 text-secondary/25" />
-        </motion.div>
-        
-        <motion.div
-          animate={{ 
-            y: [0, -20, 0],
-            rotate: [0, 12, 0],
-            scale: [1.2, 0.9, 1.2]
-          }}
-          transition={{ 
-            duration: 12, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 3
-          }}
-          className="absolute bottom-32 left-1/3 opacity-50 blur-sm"
-        >
-          <Brain className="w-14 h-14 text-accent/20" />
-        </motion.div>
-        
-        <motion.div
-          animate={{ 
-            y: [0, 35, 0],
-            rotate: [0, -10, 0],
-            scale: [0.9, 1.3, 0.9]
-          }}
-          transition={{ 
-            duration: 9, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 2.5
-          }}
-          className="absolute bottom-16 right-1/4 opacity-70 blur-sm"
-        >
-          <Brain className="w-16 h-16 text-primary/15" />
-        </motion.div>
-        
-        <motion.div
-          animate={{ 
-            y: [0, -25, 0],
-            rotate: [0, 15, 0],
-            scale: [1.1, 0.8, 1.1]
-          }}
-          transition={{ 
-            duration: 11, 
-            repeat: Infinity, 
-            ease: "easeInOut",
-            delay: 4
-          }}
-          className="absolute top-1/2 left-1/6 opacity-40 blur-sm"
-        >
-          <Brain className="w-12 h-12 text-secondary/10" />
-        </motion.div>
-
         <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16">
           {/* Hero Content */}
           <motion.div

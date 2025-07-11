@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CanvasData, PatternData } from "../../lib/types";
 import { Button } from "./button";
@@ -116,7 +116,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     ctx.globalAlpha = 1;
   };
 
-  const renderPattern = (canvas: HTMLCanvasElement, patternData: PatternData) => {
+  const renderPattern = useCallback((canvas: HTMLCanvasElement, patternData: PatternData) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -141,7 +141,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
         renderDotPattern(ctx, colors, size, complexity);
         break;
     }
-  };
+  }, []);
 
   const renderGridPattern = (ctx: CanvasRenderingContext2D, colors: string[], size: number, complexity: number) => {
     const gridSize = size;
@@ -253,10 +253,12 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
       setIsFullscreenLoading(true);
       // Small delay to show loading state
       setTimeout(() => {
-        if (type === 'canvas') {
-          renderCanvas(fullscreenCanvasRef.current!, data as CanvasData);
-        } else if (type === 'pattern') {
-          renderPattern(fullscreenCanvasRef.current!, data as PatternData);
+        if (fullscreenCanvasRef.current) {
+          if (type === 'canvas') {
+            renderCanvas(fullscreenCanvasRef.current, data as CanvasData);
+          } else if (type === 'pattern') {
+            renderPattern(fullscreenCanvasRef.current, data as PatternData);
+          }
         }
         setIsFullscreenLoading(false);
       }, 100);

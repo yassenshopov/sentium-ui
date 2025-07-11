@@ -26,13 +26,9 @@ export function useBrainState(config: UseBrainStateConfig = {}) {
   const getBrainSimulation = useCallback(() => {
     if (!brainSimulationRef.current) {
       brainSimulationRef.current = new BrainSimulation(finalConfig.initialPersonality);
-      
       // Apply custom initial state if provided
       if (finalConfig.initialBrainState) {
-        const currentState = brainSimulationRef.current.getCurrentState();
-        const updatedState = { ...currentState, ...finalConfig.initialBrainState };
-        // Note: BrainSimulation doesn't have a setState method, so we'll need to work with what we have
-        // The initial state will be applied through the useState initialization
+        brainSimulationRef.current.setState(finalConfig.initialBrainState);
       }
     }
     return brainSimulationRef.current;
@@ -113,11 +109,12 @@ export function useBrainState(config: UseBrainStateConfig = {}) {
 
   // Reset brain simulation (useful for testing)
   const resetBrainSimulation = useCallback((newPersonality?: PersonalityType) => {
-    brainSimulationRef.current = null;
-    const sim = getBrainSimulation();
     if (newPersonality) {
-      sim.setPersonality(newPersonality);
+      brainSimulationRef.current = new BrainSimulation(newPersonality);
+    } else {
+      brainSimulationRef.current = null;
     }
+    const sim = getBrainSimulation();
     setBrainState(sim.getCurrentState());
     setBrainActivity(sim.getAllActivity());
   }, [getBrainSimulation]);
