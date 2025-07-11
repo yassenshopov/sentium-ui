@@ -24,7 +24,7 @@ interface StatePanelProps {
 const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [pulseEnergy, setPulseEnergy] = useState(false);
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   useEffect(() => {
     setIsVisible(true);

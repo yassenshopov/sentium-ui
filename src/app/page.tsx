@@ -183,8 +183,8 @@ export default function Home() {
     "text-muted/20",
     "text-foreground/10"
   ];
-  const heroSectionHeight = 600; // px, adjust if needed
-  const heroSectionWidth = 1200; // px, adjust if needed
+  // const heroSectionHeight = 600; // px, adjust if needed
+  // const heroSectionWidth = 1200; // px, adjust if needed
 
   const floatingBrains = useMemo(() => {
     return Array.from({ length: NUM_BRAINS }).map((_, i) => {
@@ -223,7 +223,7 @@ export default function Home() {
         parallaxMultiplier,
       };
     });
-  }, []);
+  }, [heroPalette]);
   // --- END: Dynamic Floating Brains Config ---
 
   return (

@@ -21,26 +21,26 @@ interface MemoryDatabaseProps {
   brainActivity: BrainActivity[];
 }
 
-interface MemoryNode {
-  id: string;
-  content: string;
-  type: string;
-  importance: number;
-  associations: string[];
-  timestamp: Date;
-  accessCount: number;
-  lastAccessed: Date;
-  visual?: {
-    type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
-    data: string | CanvasData | PatternData;
-    description?: string;
-  };
-  metadata?: {
-    energy?: number;
-    focus?: number;
-    mood?: number;
-  };
-}
+// interface MemoryNode {
+//   id: string;
+//   content: string;
+//   type: string;
+//   importance: number;
+//   associations: string[];
+//   timestamp: Date;
+//   accessCount: number;
+//   lastAccessed: Date;
+//   visual?: {
+//     type: 'emoji' | 'canvas' | 'pattern' | 'diagram';
+//     data: string | CanvasData | PatternData;
+//     description?: string;
+//   };
+//   metadata?: {
+//     energy?: number;
+//     focus?: number;
+//     mood?: number;
+//   };
+// }
 
 const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -94,7 +94,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
     }), [brainActivity]);
 
   // Filter and sort memories with memoization
-  const { filteredMemories, sortedMemories } = useMemo(() => {
+  const { sortedMemories } = useMemo(() => {
     const filtered = memories.filter(memory => {
       const matchesFilter = filter === 'all' || memory.type === filter;
       const matchesSearch = memory.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,7 +115,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
       }
     });
 
-    return { filteredMemories: filtered, sortedMemories: sorted };
+    return { sortedMemories: sorted };
   }, [memories, filter, searchTerm, sortBy]);
 
   // Memoize filter counts and connections count

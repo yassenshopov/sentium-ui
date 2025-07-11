@@ -31,6 +31,15 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isFullscreenLoading, setIsFullscreenLoading] = useState(false);
 
+  const handleDownload = useCallback(() => {
+    const canvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
+    if (canvas) {
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const filename = `sentium-art-${timestamp}.png`;
+      downloadCanvas(canvas, filename);
+    }
+  }, [isFullscreen]);
+
   // Keyboard shortcuts for fullscreen modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -51,7 +60,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, isDownloading]);
+  }, [isFullscreen, isDownloading, handleDownload]);
 
   const renderCanvas = (canvas: HTMLCanvasElement, canvasData: CanvasData) => {
     const ctx = canvas.getContext('2d');
@@ -309,15 +318,6 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
       console.error('Download failed:', error);
     } finally {
       setIsDownloading(false);
-    }
-  };
-
-  const handleDownload = () => {
-    const canvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
-    if (canvas) {
-      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-      const filename = `sentium-art-${timestamp}.png`;
-      downloadCanvas(canvas, filename);
     }
   };
 

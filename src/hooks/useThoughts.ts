@@ -73,14 +73,15 @@ export function useThoughts(config: UseThoughtsConfig = {}) {
   }, [getBrainSimulation, finalConfig.spontaneousThoughtInterval, finalConfig.maxThoughts, finalConfig.enablePeriodicThoughts]);
 
   // Helper function to convert Response to Thought safely
-  const convertResponseToThought = useCallback((response: any): Thought => {
+  const convertResponseToThought = useCallback((response: unknown): Thought => {
+    const responseObj = response as Record<string, unknown>;
     return {
-      id: response.id || Date.now().toString(),
-      content: response.content || '',
-      timestamp: response.timestamp || new Date(),
+      id: (responseObj.id as string) || Date.now().toString(),
+      content: (responseObj.content as string) || '',
+      timestamp: (responseObj.timestamp as string) || timestampHelpers.now(),
       type: 'reflection', // Default type for responses
-      metadata: response.metadata || {},
-      visual: response.visual
+      metadata: (responseObj.metadata as Record<string, unknown>) || {},
+      visual: responseObj.visual as Thought['visual']
     };
   }, []);
 
