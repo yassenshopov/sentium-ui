@@ -1,22 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
-
-const THEME_KEY = "sentium-theme";
-
-function getInitialTheme() {
-  if (typeof window === "undefined") return "dark";
-  return localStorage.getItem(THEME_KEY) || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-}
+import { useTheme } from "next-themes";
 
 export default function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = useState(getInitialTheme());
-
-  useEffect(() => {
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
+  const { theme, setTheme } = useTheme();
 
   return (
     <Button

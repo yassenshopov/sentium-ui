@@ -13,7 +13,8 @@ import {
   Zap, 
   Target,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Minus
 } from "lucide-react";
 
 interface StatePanelProps {
@@ -40,9 +41,8 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
 
 
   const getMoodIcon = (mood: number) => {
-    if (mood > 50) return <TrendingUp className="w-4 h-4" />;
-    if (mood > 0) return <TrendingUp className="w-4 h-4" />;
-    if (mood > -50) return <TrendingDown className="w-4 h-4" />;
+    if (mood > 25) return <TrendingUp className="w-4 h-4" />;
+    if (mood >= -25) return <Minus className="w-4 h-4" />;
     return <TrendingDown className="w-4 h-4" />;
   };
 
@@ -59,24 +59,13 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
     { name: "Mood", value: brainState.mood + 100, max: 200, color: "hsl(var(--chart-3))", icon: Brain },
   ];
 
-  // Theme-aware ECG colors
+  // ECG colors (same for both light and dark themes)
   const ecgColors = {
-    light: {
-      primary: "hsl(var(--primary))",
-      secondary: "hsl(var(--chart-2))",
-      grid: "hsl(var(--muted-foreground))",
-      baseline: "hsl(var(--border))"
-    },
-    dark: {
-      primary: "hsl(var(--primary))",
-      secondary: "hsl(var(--chart-2))",
-      grid: "hsl(var(--muted-foreground))",
-      baseline: "hsl(var(--border))"
-    }
+    primary: "hsl(var(--primary))",
+    secondary: "hsl(var(--chart-2))",
+    grid: "hsl(var(--muted-foreground))",
+    baseline: "hsl(var(--border))"
   };
-
-  const currentTheme = theme || 'light';
-  const ecgTheme = ecgColors[currentTheme as keyof typeof ecgColors];
 
   return (
     <motion.div
@@ -110,12 +99,12 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
           className="w-full h-32 mb-6 relative"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-muted to-muted/50 dark:from-muted dark:to-muted/50 rounded-lg" />
-          <svg width="100%" height="100%" viewBox="0 0 300 120" className="absolute inset-0" key={theme}>
+          <svg width="100%" height="100%" viewBox="0 0 300 120" className="absolute inset-0">
             <defs>
               <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={ecgTheme.primary} stopOpacity="0.9" />
-                <stop offset="50%" stopColor={ecgTheme.secondary} stopOpacity="0.7" />
-                <stop offset="100%" stopColor={ecgTheme.primary} stopOpacity="0.9" />
+                <stop offset="0%" stopColor={ecgColors.primary} stopOpacity="0.9" />
+                <stop offset="50%" stopColor={ecgColors.secondary} stopOpacity="0.7" />
+                <stop offset="100%" stopColor={ecgColors.primary} stopOpacity="0.9" />
               </linearGradient>
             </defs>
             
@@ -125,7 +114,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
               animate={{ pathLength: 1 }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
               d="M0,60 L300,60"
-              stroke={ecgTheme.baseline}
+              stroke={ecgColors.baseline}
               strokeWidth="1"
               strokeDasharray="2,2"
               fill="none"
@@ -162,7 +151,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
                 times: [0, 0.05, 0.08, 0.1, 0.12, 0.17, 0.19, 0.22, 0.24, 0.27, 0.29, 0.32, 0.34, 0.37, 0.39, 0.42, 0.44, 0.47, 0.49, 0.52, 0.54, 0.57, 0.59, 0.62, 0.64, 0.67, 0.69, 0.72, 0.74, 0.77, 0.79, 0.82, 0.84, 0.87, 0.89, 0.92, 0.94, 0.97, 0.99, 1]
               }}
               r="2"
-              fill={ecgTheme.primary}
+              fill={ecgColors.primary}
               opacity="0.8"
             />
             
@@ -174,7 +163,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
               animate={{ opacity: 0.1 }}
               transition={{ delay: 1, duration: 1 }}
               d="M0,30 L300,30 M0,45 L300,45 M0,75 L300,75 M0,90 L300,90"
-              stroke={ecgTheme.grid}
+              stroke={ecgColors.grid}
               strokeWidth="0.5"
               fill="none"
             />
@@ -184,94 +173,99 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
         {/* State Metrics */}
         <div className="w-full space-y-4">
           <AnimatePresence>
-            {brainActivityData.map((metric, index) => (
-              <motion.div
-                key={metric.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                className="space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="p-1.5 rounded-md"
-                      style={{ backgroundColor: `${metric.color}20` }}
-                    >
-                      <metric.icon 
-                        className="w-4 h-4" 
-                        style={{ color: metric.color }}
-                      />
-                    </div>
-                    <span className="font-medium text-sm">{metric.name}</span>
-                    {metric.name === "Mood" && (
-                      <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 0.5, repeat: 2 }}
+            {brainActivityData.map((metric, index) => {
+              // Extract mood calculation logic to avoid repetition
+              const moodPercentage = metric.name === "Mood" ? (metric.value / 200) * 100 : metric.value;
+              
+              return (
+                <motion.div
+                  key={metric.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                  className="space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="p-1.5 rounded-md"
+                        style={{ backgroundColor: `${metric.color}20` }}
                       >
-                        {getMoodIcon(brainState.mood)}
-                      </motion.div>
-                    )}
+                        <metric.icon 
+                          className="w-4 h-4" 
+                          style={{ color: metric.color }}
+                        />
+                      </div>
+                      <span className="font-medium text-sm">{metric.name}</span>
+                      {metric.name === "Mood" && (
+                        <motion.div
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 0.5, repeat: 2 }}
+                        >
+                          {getMoodIcon(brainState.mood)}
+                        </motion.div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-mono">
+                        {metric.name === "Mood" ? brainState.mood : Math.round(metric.value)}
+                      </span>
+                      {metric.name === "Energy" && brainState.energy < 30 && (
+                        <motion.div
+                          animate={pulseEnergy ? { 
+                            scale: [1, 1.3, 1],
+                            opacity: [1, 0.7, 1]
+                          } : {}}
+                          transition={{ 
+                            duration: 1.5, 
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Zap className="w-4 h-4 text-destructive" />
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-mono">
-                      {metric.name === "Mood" ? brainState.mood : Math.round(metric.value)}
-                    </span>
-                                         {metric.name === "Energy" && brainState.energy < 30 && (
-                       <motion.div
-                         animate={pulseEnergy ? { 
-                           scale: [1, 1.3, 1],
-                           opacity: [1, 0.7, 1]
-                         } : {}}
-                         transition={{ 
-                           duration: 1.5, 
-                           repeat: Infinity,
-                           ease: "easeInOut"
-                         }}
-                       >
-                         <Zap className="w-4 h-4 text-destructive" />
-                       </motion.div>
-                     )}
-                  </div>
-                </div>
-                
-                                <div className="relative">
-                  <Progress 
-                    value={metric.name === "Mood" ? (metric.value / 200) * 100 : metric.value} 
-                    className="h-3"
-                  />
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ 
-                      width: `${metric.name === "Mood" ? (metric.value / 200) * 100 : metric.value}%` 
-                    }}
-                    transition={{ delay: 0.5 + index * 0.1, duration: 1.2, ease: "easeOut" }}
-                    className="absolute top-0 left-0 h-3 rounded-full overflow-hidden"
-                    style={{ 
-                      background: `linear-gradient(90deg, ${metric.color}80, ${metric.color})`
-                    }}
-                  >
-                    {/* Animated Shimmer Effect */}
-                    <motion.div
-                      animate={{ 
-                        x: ["-100%", "100%"]
-                      }}
-                      transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        ease: "linear",
-                        delay: 0.8 + index * 0.2
-                      }}
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        background: `linear-gradient(90deg, transparent, ${metric.color}40, transparent)`,
-                        transform: "skewX(-20deg)"
-                      }}
+                  
+                  <div className="relative">
+                    <Progress 
+                      value={moodPercentage} 
+                      className="h-3"
                     />
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ 
+                        width: `${moodPercentage}%` 
+                      }}
+                      transition={{ delay: 0.5 + index * 0.1, duration: 1.2, ease: "easeOut" }}
+                      className="absolute top-0 left-0 h-3 rounded-full overflow-hidden"
+                      style={{ 
+                        background: `linear-gradient(90deg, ${metric.color}80, ${metric.color})`
+                      }}
+                    >
+                      {/* Animated Shimmer Effect */}
+                      <motion.div
+                        animate={{ 
+                          x: ["-100%", "100%"]
+                        }}
+                        transition={{ 
+                          duration: 2, 
+                          repeat: Infinity, 
+                          ease: "linear",
+                          delay: 0.8 + index * 0.2
+                        }}
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${metric.color}40, transparent)`,
+                          transform: "skewX(-20deg)"
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
 
           {/* Uptime and Status */}

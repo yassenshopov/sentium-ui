@@ -32,12 +32,51 @@ function SelectTrigger({
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
 }) {
+  // Base layout and sizing styles
+  const baseStyles = "flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap";
+  
+  // Size-specific height styles
+  const sizeStyles = "data-[size=default]:h-9 data-[size=sm]:h-8";
+  
+  // Border and background styles
+  const borderStyles = "border-input dark:bg-input/30 dark:hover:bg-input/50";
+  
+  // Focus and ring styles
+  const focusStyles = "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none";
+  
+  // Invalid state styles
+  const invalidStyles = "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
+  
+  // Disabled state styles
+  const disabledStyles = "disabled:cursor-not-allowed disabled:opacity-50";
+  
+  // Transition styles
+  const transitionStyles = "transition-[color,box-shadow]";
+  
+  // Placeholder and text styles
+  const textStyles = "data-[placeholder]:text-muted-foreground";
+  
+  // SVG icon styles
+  const svgStyles = "[&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  
+  // Select value styles
+  const valueStyles = "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2";
+
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        baseStyles,
+        sizeStyles,
+        borderStyles,
+        focusStyles,
+        invalidStyles,
+        disabledStyles,
+        transitionStyles,
+        textStyles,
+        svgStyles,
+        valueStyles,
         className
       )}
       {...props}
@@ -56,14 +95,33 @@ function SelectContent({
   position = "popper",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  // Base content styles
+  const baseStyles = "bg-popover text-popover-foreground relative z-50 rounded-md border p-1";
+  
+  // Sizing and overflow styles
+  const sizingStyles = "max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto";
+  
+  // Animation styles
+  const animationStyles = "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
+  
+  // Slide animation styles
+  const slideStyles = "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2";
+  
+  // Popper positioning styles
+  const popperStyles = position === "popper" 
+    ? "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1"
+    : "";
+
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1",
-          position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          baseStyles,
+          sizingStyles,
+          animationStyles,
+          slideStyles,
+          popperStyles,
           className
         )}
         position={position}
@@ -103,11 +161,30 @@ function SelectItem({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Item>) {
+  // Base layout styles
+  const baseStyles = "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm";
+  
+  // Focus and interaction styles
+  const focusStyles = "focus:bg-accent focus:text-accent-foreground outline-hidden select-none";
+  
+  // Disabled state styles
+  const disabledStyles = "data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+  
+  // SVG icon styles
+  const svgStyles = "[&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  
+  // Span element styles
+  const spanStyles = "*:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2";
+
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        baseStyles,
+        focusStyles,
+        disabledStyles,
+        svgStyles,
+        spanStyles,
         className
       )}
       {...props}

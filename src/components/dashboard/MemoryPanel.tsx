@@ -108,20 +108,20 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
         >
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2">
-            {[
-              { key: 'all', label: 'All', count: brainActivity.length },
-              { key: 'thought', label: 'Thoughts', count: brainActivity.filter(a => a.type === 'thought').length },
-              { key: 'memory', label: 'Memories', count: brainActivity.filter(a => a.type === 'memory').length },
-              { key: 'response', label: 'Responses', count: brainActivity.filter(a => a.type === 'response').length }
-            ].map(({ key, label, count }) => (
+            {([
+              { key: 'all' as const, label: 'All', count: brainActivity.length },
+              { key: 'thought' as const, label: 'Thoughts', count: brainActivity.filter(a => a.type === 'thought').length },
+              { key: 'memory' as const, label: 'Memories', count: brainActivity.filter(a => a.type === 'memory').length },
+              { key: 'response' as const, label: 'Responses', count: brainActivity.filter(a => a.type === 'response').length }
+            ] as const).map(({ key, label, count }) => (
               <Button
                 key={key}
                 variant={filter === key ? "default" : "outline"}
                 size="sm"
-                onClick={() => setFilter(key as any)}
+                onClick={() => setFilter(key)}
                 className="text-xs"
               >
-                {getActivityIcon(key as BrainActivity['type'])}
+                {key === 'all' ? <Sparkles className="w-4 h-4" /> : getActivityIcon(key as BrainActivity['type'])}
                 <span className="ml-1">{label}</span>
                 <Badge variant="secondary" className="ml-1 text-xs">
                   {count}

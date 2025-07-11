@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import TabbedInterface from "@/components/layout/TabbedInterface";
 import { useBrainState } from "../hooks/useBrainState";
@@ -26,6 +26,11 @@ export default function Home() {
   const [currentPersonality, setCurrentPersonality] = useState<PersonalityType>("curious");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isChannelOpen, setIsChannelOpen] = useState(false);
+  
+  // Ref to track current channel state to avoid stale closures
+  const channelOpenRef = useRef(isChannelOpen);
+  channelOpenRef.current = isChannelOpen;
+  
   const { 
     brainState, 
     brainActivity, 
@@ -38,7 +43,7 @@ export default function Home() {
     if (message.trim() && isChannelOpen) {
       // Add user message to chat immediately
       const userMessage: ChatMessage = {
-        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `user-${crypto.randomUUID()}`,
         type: 'user',
         content: message,
         timestamp: new Date()
@@ -61,7 +66,7 @@ export default function Home() {
         if (response) {
           // Add brain response to chat
           const brainMessage: ChatMessage = {
-            id: `brain-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            id: `brain-${crypto.randomUUID()}`,
             type: 'brain',
             content: response.content,
             timestamp: new Date(),
@@ -75,15 +80,18 @@ export default function Home() {
   };
 
   const handleToggleChannel = () => {
-    setIsChannelOpen(!isChannelOpen);
+    // Store the new state value to avoid stale closure
+    const newChannelState = !isChannelOpen;
+    setIsChannelOpen(newChannelState);
     
     // If opening the channel, the brain might initiate conversation
-    if (!isChannelOpen) {
+    if (newChannelState) {
       // Brain can start talking when channel opens
       setTimeout(() => {
-        if (isChannelOpen) {
+        // Use the captured value instead of the potentially stale state
+        if (newChannelState) {
           const brainMessage: ChatMessage = {
-            id: Date.now().toString(),
+            id: crypto.randomUUID(),
             type: 'brain',
             content: "Hello! I'm Sentium. The communication channel is now open. We can have a free-flowing conversation - feel free to ask me anything or just chat naturally.",
             timestamp: new Date()
@@ -105,6 +113,9 @@ export default function Home() {
   useEffect(() => {
     if (!isChannelOpen) return;
 
+    // Array to store all timeout IDs for cleanup
+    const timeoutIds: ReturnType<typeof setTimeout>[] = [];
+
     const interval = setInterval(() => {
       // Generate a thought
       generateThought();
@@ -125,10 +136,12 @@ export default function Home() {
         // Add a random delay to make it feel more natural (1-3 seconds)
         const randomDelay = 1000 + Math.random() * 2000;
         
-        setTimeout(() => {
-          if (isChannelOpen) { // Check if channel is still open
+        // Store the timeout ID for cleanup
+        const timeoutId = setTimeout(() => {
+          // Use ref to check current channel state and avoid stale closure
+          if (channelOpenRef.current) {
             const brainMessage: ChatMessage = {
-              id: Date.now().toString(),
+              id: crypto.randomUUID(),
               type: 'brain',
               content: randomMessage,
               timestamp: new Date()
@@ -136,10 +149,18 @@ export default function Home() {
             setChatMessages(prev => [...prev, brainMessage]);
           }
         }, randomDelay);
+        
+        // Add timeout ID to the array for cleanup
+        timeoutIds.push(timeoutId);
       }
     }, 30000); // Check every 30 seconds
 
-    return () => clearInterval(interval);
+    // Cleanup function to clear both interval and all pending timeouts
+    return () => {
+      clearInterval(interval);
+      // Clear all pending timeouts to prevent race conditions
+      timeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+    };
   }, [isChannelOpen, generateThought]);
 
   return (
@@ -164,7 +185,7 @@ export default function Home() {
             repeat: Infinity, 
             ease: "easeInOut" 
           }}
-          className="absolute top-16 left-8 opacity-8 blur-sm"
+          className="absolute top-16 left-8 opacity-80 blur-sm"
         >
           <Brain className="w-20 h-20 text-primary/30" />
         </motion.div>
@@ -181,7 +202,7 @@ export default function Home() {
             ease: "easeInOut",
             delay: 1.5
           }}
-          className="absolute top-40 right-20 opacity-6 blur-sm"
+          className="absolute top-40 right-20 opacity-60 blur-sm"
         >
           <Brain className="w-16 h-16 text-secondary/25" />
         </motion.div>
@@ -198,7 +219,7 @@ export default function Home() {
             ease: "easeInOut",
             delay: 3
           }}
-          className="absolute bottom-32 left-1/3 opacity-5 blur-sm"
+          className="absolute bottom-32 left-1/3 opacity-50 blur-sm"
         >
           <Brain className="w-14 h-14 text-accent/20" />
         </motion.div>
@@ -215,9 +236,9 @@ export default function Home() {
             ease: "easeInOut",
             delay: 2.5
           }}
-          className="absolute bottom-16 right-1/4 opacity-7 blur-sm"
+          className="absolute bottom-16 right-1/4 opacity-70 blur-sm"
         >
-          <Brain className="w-18 h-18 text-primary/15" />
+          <Brain className="w-16 h-16 text-primary/15" />
         </motion.div>
         
         <motion.div
@@ -232,7 +253,7 @@ export default function Home() {
             ease: "easeInOut",
             delay: 4
           }}
-          className="absolute top-1/2 left-1/6 opacity-4 blur-sm"
+          className="absolute top-1/2 left-1/6 opacity-40 blur-sm"
         >
           <Brain className="w-12 h-12 text-secondary/10" />
         </motion.div>

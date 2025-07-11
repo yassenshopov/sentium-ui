@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -53,41 +53,86 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
     setIsVisible(true);
   }, []);
 
-  // Convert brain activity to memory nodes
-  const memories: MemoryNode[] = brainActivity
-    .filter(activity => activity.type === 'memory')
-    .map(activity => ({
-      id: activity.id,
-      content: activity.content,
-      type: activity.subtype,
-      importance: activity.importance || 50,
-      associations: activity.associations || [],
-      timestamp: new Date(activity.timestamp),
-      accessCount: Math.floor(Math.random() * 20) + 1, // Mock data
-      lastAccessed: new Date(Date.now() - Math.random() * 86400000), // Mock data
-      visual: activity.visual,
-      metadata: activity.metadata
-    }));
-
-  const filteredMemories = memories.filter(memory => {
-    const matchesFilter = filter === 'all' || memory.type === filter;
-    const matchesSearch = memory.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         memory.associations.some(assoc => assoc.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesFilter && matchesSearch;
-  });
-
-  const sortedMemories = [...filteredMemories].sort((a, b) => {
-    switch (sortBy) {
-      case 'importance':
-        return b.importance - a.importance;
-      case 'recent':
-        return b.timestamp.getTime() - a.timestamp.getTime();
-      case 'access':
-        return b.accessCount - a.accessCount;
-      default:
-        return 0;
+  // Deterministic function to generate consistent mock data based on activity ID
+  const generateMockData = (activityId: string) => {
+    // Create a simple hash from the activity ID to generate consistent values
+    let hash = 0;
+    for (let i = 0; i < activityId.length; i++) {
+      const char = activityId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
     }
-  });
+    
+    // Generate consistent access count (1-20) based on hash
+    const accessCount = Math.abs(hash % 20) + 1;
+    
+    // Generate consistent last accessed time (within last 24 hours) based on hash
+    const hoursAgo = Math.abs(hash % 24);
+    const minutesAgo = Math.abs((hash * 7) % 60); // Additional variation
+    const lastAccessed = new Date(Date.now() - (hoursAgo * 60 * 60 * 1000) - (minutesAgo * 60 * 1000));
+    
+    return { accessCount, lastAccessed };
+  };
+
+  // Convert brain activity to memory nodes with memoization
+  const memories = useMemo(() => brainActivity
+    .filter(activity => activity.type === 'memory')
+    .map(activity => {
+      const mockData = generateMockData(activity.id);
+      return {
+        id: activity.id,
+        content: activity.content,
+        type: activity.subtype,
+        importance: activity.importance || 50,
+        associations: activity.associations || [],
+        timestamp: new Date(activity.timestamp),
+        accessCount: mockData.accessCount,
+        lastAccessed: mockData.lastAccessed,
+        visual: activity.visual,
+        metadata: activity.metadata
+      };
+    }), [brainActivity]);
+
+  // Filter and sort memories with memoization
+  const { filteredMemories, sortedMemories } = useMemo(() => {
+    const filtered = memories.filter(memory => {
+      const matchesFilter = filter === 'all' || memory.type === filter;
+      const matchesSearch = memory.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           memory.associations.some(assoc => assoc.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesFilter && matchesSearch;
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'importance':
+          return b.importance - a.importance;
+        case 'recent':
+          return b.timestamp.getTime() - a.timestamp.getTime();
+        case 'access':
+          return b.accessCount - a.accessCount;
+        default:
+          return 0;
+      }
+    });
+
+    return { filteredMemories: filtered, sortedMemories: sorted };
+  }, [memories, filter, searchTerm, sortBy]);
+
+  // Memoize filter counts and connections count
+  const { filterCounts, totalConnections } = useMemo(() => {
+    const counts = {
+      all: memories.length,
+      experience: memories.filter(m => m.type === 'experience').length,
+      fact: memories.filter(m => m.type === 'fact').length,
+      conversation: memories.filter(m => m.type === 'conversation').length,
+      insight: memories.filter(m => m.type === 'insight').length,
+      pattern: memories.filter(m => m.type === 'pattern').length
+    };
+
+    const connections = memories.reduce((sum, m) => sum + m.associations.length, 0);
+
+    return { filterCounts: counts, totalConnections: connections };
+  }, [memories]);
 
   const getMemoryIcon = (type: string) => {
     switch (type) {
@@ -169,7 +214,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
               {memories.length} memories
             </Badge>
             <Badge variant="outline" className="text-xs">
-              {memories.reduce((sum, m) => sum + m.associations.length, 0)} connections
+              {totalConnections} connections
             </Badge>
           </div>
         </motion.div>
@@ -209,12 +254,12 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2">
               {[
-                { key: 'all', label: 'All', count: memories.length },
-                { key: 'experience', label: 'Experiences', count: memories.filter(m => m.type === 'experience').length },
-                { key: 'fact', label: 'Facts', count: memories.filter(m => m.type === 'fact').length },
-                { key: 'conversation', label: 'Conversations', count: memories.filter(m => m.type === 'conversation').length },
-                { key: 'insight', label: 'Insights', count: memories.filter(m => m.type === 'insight').length },
-                { key: 'pattern', label: 'Patterns', count: memories.filter(m => m.type === 'pattern').length }
+                { key: 'all', label: 'All', count: filterCounts.all },
+                { key: 'experience', label: 'Experiences', count: filterCounts.experience },
+                { key: 'fact', label: 'Facts', count: filterCounts.fact },
+                { key: 'conversation', label: 'Conversations', count: filterCounts.conversation },
+                { key: 'insight', label: 'Insights', count: filterCounts.insight },
+                { key: 'pattern', label: 'Patterns', count: filterCounts.pattern }
               ].map(({ key, label, count }) => (
                 <Button
                   key={key}

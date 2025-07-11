@@ -58,7 +58,10 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
   // Auto-scroll for streaming view
   useEffect(() => {
     if (viewStyle === 'streaming' && textRef.current && isTyping) {
-      textRef.current.scrollTop = textRef.current.scrollHeight;
+      textRef.current.scrollTo({
+        top: textRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [displayedText, isTyping, viewStyle]);
 

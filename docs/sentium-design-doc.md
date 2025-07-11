@@ -210,7 +210,7 @@ App (page.tsx)
 ## ⚙️ Dev Setup (README Block)
 
 ```bash
-git clone https://github.com/yassen/sentium-ui.git
+git clone https://github.com/yasse/sentium-ui.git
 cd sentium-ui
 pnpm install
 pnpm dev

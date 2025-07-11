@@ -31,6 +31,11 @@ export class VisualGenerator {
     this.mood = mood;
   }
 
+  // Update mood without recreating the instance
+  updateMood(mood: number): void {
+    this.mood = mood;
+  }
+
   // Generate an emoji based on context and mood
   generateEmoji(context: string, mood?: number): string {
     const currentMood = mood ?? this.mood;
@@ -134,16 +139,18 @@ export class VisualGenerator {
     const color = palette[Math.floor(Math.random() * palette.length)];
     
     switch (type) {
-      case 'circle':
+      case 'circle': {
+        const radius = 20 + Math.random() * 40;
         return {
           type: 'circle',
           x: Math.random() * width,
           y: Math.random() * height,
-          width: 20 + Math.random() * 40,
-          height: 20 + Math.random() * 40,
+          width: radius,
+          height: radius,
           color,
           opacity: 0.7 + Math.random() * 0.3
         };
+      }
       case 'rectangle':
         return {
           type: 'rectangle',
@@ -164,7 +171,7 @@ export class VisualGenerator {
           color,
           opacity: 0.8 + Math.random() * 0.2
         };
-      case 'text':
+      case 'text': {
         const texts = ['AI', '🧠', '💭', '✨', '🌟', '💡', '🔮', '🎯'];
         return {
           type: 'text',
@@ -175,6 +182,7 @@ export class VisualGenerator {
           fontSize: 16 + Math.random() * 20,
           opacity: 0.8 + Math.random() * 0.2
         };
+      }
     }
   }
 

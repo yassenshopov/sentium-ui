@@ -10,19 +10,19 @@
       "id": "2",
       "content": "Evaluating input data",
       "timestamp": "2023-01-01T09:20:00.000Z",
-      "type": "response"
+      "type": "analysis"
     },
     {
       "id": "3",
       "content": "Memory consolidation",
       "timestamp": "2023-01-01T09:10:00.000Z",
-      "type": "internal"
+      "type": "realization"
     },
     {
       "id": "4",
       "content": "Processing stimulus",
       "timestamp": "2023-01-01T08:45:00.000Z",
-      "type": "internal"
+      "type": "reflection"
     }
   ],
   "brainState": {

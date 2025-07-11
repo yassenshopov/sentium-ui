@@ -45,9 +45,6 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
         if (e.key === 'f' || e.key === 'F') {
           e.preventDefault();
           setIsFullscreen(true);
-        } else if (e.key === 'd' || e.key === 'D') {
-          e.preventDefault();
-          handleDownload();
         }
       }
     };
@@ -287,9 +284,13 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
       tempCtx.drawImage(canvas, 0, 0);
       
       // Convert to blob and download
-      const blob = await new Promise<Blob>((resolve) => {
+      const blob = await new Promise<Blob>((resolve, reject) => {
         tempCanvas.toBlob((blob) => {
-          resolve(blob!);
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob from canvas'));
+          }
         }, 'image/png', 1.0);
       });
 
@@ -330,6 +331,26 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     }
   };
 
+  // Helper function to create emoji canvas for download
+  const createEmojiCanvas = (emojiText: string, canvasSize: number, fontSize: number): HTMLCanvasElement | null => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      console.error('Failed to get 2D context for emoji canvas');
+      return null;
+    }
+    
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+    ctx.font = `${fontSize}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emojiText, canvasSize / 2, canvasSize / 2);
+    
+    return canvas;
+  };
+
   if (type === 'emoji') {
     return (
       <>
@@ -360,17 +381,8 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
           </Button>
             <Button
               onClick={() => {
-                // For emojis, we'll create a canvas to download
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                  canvas.width = 200;
-                  canvas.height = 200;
-                  ctx.font = '120px Arial';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'middle';
-                  ctx.fillText(data as string, 100, 100);
-                  
+                const canvas = createEmojiCanvas(data as string, 200, 120);
+                if (canvas) {
                   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
                   const filename = `sentium-emoji-${timestamp}.png`;
                   downloadCanvas(canvas, filename);
@@ -425,16 +437,8 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
                   <div className="flex items-center gap-2">
                     <Button
                       onClick={() => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                          canvas.width = 400;
-                          canvas.height = 400;
-                          ctx.font = '240px Arial';
-                          ctx.textAlign = 'center';
-                          ctx.textBaseline = 'middle';
-                          ctx.fillText(data as string, 200, 200);
-                          
+                        const canvas = createEmojiCanvas(data as string, 400, 240);
+                        if (canvas) {
                           const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
                           const filename = `sentium-emoji-${timestamp}.png`;
                           downloadCanvas(canvas, filename);
@@ -516,7 +520,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
             variant="ghost"
             className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm hover:bg-background/90"
             disabled={isDownloading}
-            title="Download image (D)"
+            title="Download image"
           >
             {isDownloading ? (
               <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />

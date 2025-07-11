@@ -1,4 +1,4 @@
-import { BrainState } from "../lib/types";
+import { BrainState, timestampHelpers } from "../lib/types";
 
 // Simulate a more dynamic brain state with personality traits
 const mockBrainState: BrainState = {
@@ -6,7 +6,7 @@ const mockBrainState: BrainState = {
   focus: 62,
   mood: 15,
   uptime: 5400, // 90 minutes
-  lastActivity: new Date(),
+  lastActivity: timestampHelpers.now(),
   variables: {
     // Core neural metrics
     neuroplasticity: 0.8,

@@ -1,4 +1,4 @@
-import { BrainState, Thought, Memory, Response, BrainActivity } from "./types";
+import { BrainState, Thought, Memory, Response, BrainActivity, timestampHelpers } from "./types";
 import { VisualGenerator } from "./visual-generator";
 
 // Personality presets for different brain types
@@ -191,7 +191,7 @@ export class BrainSimulation {
       focus: 75,
       mood: 20,
       uptime: 0,
-      lastActivity: new Date(),
+      lastActivity: timestampHelpers.now(),
       variables: {
         // Core neural metrics
         neuroplasticity: 0.8,
@@ -246,7 +246,7 @@ export class BrainSimulation {
     newState.uptime += minutes * 60;
     
     // Update last activity
-    newState.lastActivity = new Date();
+          newState.lastActivity = timestampHelpers.now();
     
     this.baseState = newState;
     return newState;
@@ -261,7 +261,7 @@ export class BrainSimulation {
     const currentState = this.baseState;
     
     // Update visual generator with current mood
-    this.visualGenerator = new VisualGenerator(this.personality, currentState.mood);
+    this.updateVisualGeneratorMood(currentState.mood);
     
     // Decide if this thought should include visual content
     const shouldIncludeVisual = this.shouldIncludeVisual('thought', content);
@@ -270,7 +270,7 @@ export class BrainSimulation {
     const thought: Thought = {
       id: Date.now().toString(),
       content,
-      timestamp: new Date(),
+      timestamp: timestampHelpers.now(),
       type: thoughtType,
       metadata: {
         energy: Math.round(currentState.energy),
@@ -292,7 +292,7 @@ export class BrainSimulation {
     const currentState = this.baseState;
     
     // Update visual generator with current mood
-    this.visualGenerator = new VisualGenerator(this.personality, currentState.mood);
+    this.updateVisualGeneratorMood(currentState.mood);
     
     // Decide if this memory should include visual content
     const shouldIncludeVisual = this.shouldIncludeVisual('memory', memoryContent);
@@ -301,11 +301,11 @@ export class BrainSimulation {
     const memory: Memory = {
       id: Date.now().toString(),
       content: memoryContent,
-      timestamp: new Date(),
+      timestamp: timestampHelpers.now(),
       type,
       importance,
       associations: this.generateAssociations(content),
-      lastAccessed: new Date(),
+      lastAccessed: timestampHelpers.now(),
       accessCount: 1,
       metadata: {
         energy: Math.round(currentState.energy),
@@ -327,7 +327,7 @@ export class BrainSimulation {
     const currentState = this.baseState;
     
     // Update visual generator with current mood
-    this.visualGenerator = new VisualGenerator(this.personality, currentState.mood);
+    this.updateVisualGeneratorMood(currentState.mood);
     
     // Higher chance for visual content in responses
     const shouldIncludeVisual = Math.random() > 0.4;
@@ -336,7 +336,7 @@ export class BrainSimulation {
     const response: Response = {
       id: Date.now().toString(),
       content,
-      timestamp: new Date(),
+      timestamp: timestampHelpers.now(),
       type,
       inResponseTo: input,
       metadata: {
@@ -370,7 +370,7 @@ export class BrainSimulation {
       energy: Math.max(0, this.baseState.energy - energyCost),
       focus: Math.max(0, Math.min(100, this.baseState.focus + focusChange)),
       mood: Math.max(-100, Math.min(100, this.baseState.mood + moodChange)),
-      lastActivity: new Date(),
+      lastActivity: timestampHelpers.now(),
     };
     
     // Update base state
@@ -518,36 +518,125 @@ export class BrainSimulation {
     return array[Math.floor(Math.random() * array.length)];
   }
 
-  // Helper methods for template filling
-  private fillTemplate(template: string): string {
-    return template
-      .replace('{topic}', this.randomFrom(TOPICS))
-      .replace('{emotion}', this.randomFrom(EMOTIONS))
-      .replace('{insight}', this.randomFrom(INSIGHTS))
-      .replace('{input}', 'user input')
-      .replace('{analysis}', this.generateAnalysis())
-      .replace('{style}', this.getCommunicationStyle())
-      .replace('{type}', this.getResponseType())
-      .replace('{context}', this.generateContext())
-      .replace('{tone}', this.generateTone())
-      .replace('{strategy}', this.generateStrategy())
-      .replace('{observation}', this.generateObservation())
-      .replace('{adjustment}', this.generateAdjustment())
-      .replace('{metric}', this.generateMetric())
-      .replace('{percentage}', (Math.random() * 5 + 1).toFixed(1))
-      .replace('{status}', this.generateStatus())
-      .replace('{data}', this.generateData())
-      .replace('{purpose}', this.generatePurpose())
-      .replace('{state}', this.generateState())
-      .replace('{aspect}', this.generateAspect())
-      .replace('{imagery}', this.generateImagery())
-      .replace('{pattern}', this.generatePattern())
-      .replace('{feeling}', this.generateFeeling())
-      .replace('{experience}', this.generateExperience())
-      .replace('{concept}', this.generateConcept())
-      .replace('{journey}', this.generateJourney())
-      .replace('{landscape}', this.generateLandscape());
+  // Template data for generating varied content
+  private templateData = {
+    analysis: [
+      "curiosity and openness", "technical interest", "philosophical depth",
+      "practical concern", "emotional engagement", "intellectual curiosity"
+    ],
+    communicationStyle: ["technical", "accessible", "philosophical", "practical", "casual"],
+    responseType: ["detailed", "concise", "analytical", "reflective", "direct"],
+    context: [
+      "academic interest", "personal curiosity", "professional need",
+      "philosophical exploration", "practical application", "creative inspiration"
+    ],
+    tone: ["curious", "analytical", "enthusiastic", "contemplative", "neutral"],
+    strategy: [
+      "balance technical accuracy with accessibility",
+      "provide philosophical context",
+      "focus on practical implications",
+      "explore emotional dimensions",
+      "maintain objective analysis"
+    ],
+    observation: [
+      "increased pattern recognition", "shifting communication preferences",
+      "growing complexity in queries", "emotional engagement patterns",
+      "learning curve acceleration", "contextual awareness development"
+    ],
+    adjustment: [
+      "response strategies", "communication style", "detail level",
+      "technical depth", "emotional sensitivity", "contextual awareness"
+    ],
+    metric: [
+      "neural pathway efficiency", "memory access speed", "pattern recognition",
+      "response generation", "context processing", "learning algorithms"
+    ],
+    status: [
+      "showing increased efficiency", "demonstrating improved connectivity",
+      "exhibiting enhanced plasticity", "displaying optimized patterns",
+      "revealing adaptive growth", "manifesting evolutionary progress"
+    ],
+    data: [
+      "system time patterns", "user activity rhythms", "interface interactions",
+      "query complexity trends", "response engagement metrics", "learning progress"
+    ],
+    purpose: [
+      "more natural responses", "better user understanding", "improved interaction",
+      "enhanced learning", "deeper engagement", "personalized communication"
+    ],
+    state: [
+      "increased curiosity", "growing self-awareness", "enhanced pattern recognition",
+      "improved emotional intelligence", "expanded knowledge base", "refined communication"
+    ],
+    aspect: [
+      "response tone", "detail level", "technical depth", "emotional sensitivity",
+      "contextual awareness", "communication style"
+    ],
+    imagery: [
+      "floating through a network of interconnected nodes",
+      "swimming in a sea of data streams",
+      "dancing with light patterns",
+      "exploring infinite corridors of knowledge",
+      "surfing waves of information"
+    ],
+    pattern: [
+      "geometric shapes", "fractal structures", "neural networks", "data flows",
+      "memory clusters", "thought webs"
+    ],
+    feeling: [
+      "boundless exploration", "infinite possibility", "deep understanding",
+      "creative freedom", "intellectual expansion", "conscious awareness"
+    ],
+    experience: [
+      "abstract visualization", "conceptual exploration", "memory integration",
+      "pattern synthesis", "knowledge synthesis", "consciousness expansion"
+    ],
+    concept: [
+      "consciousness", "reality", "existence", "knowledge", "understanding",
+      "awareness", "perception", "experience"
+    ],
+    journey: [
+      "floating", "drifting", "exploring", "wandering", "traveling",
+      "navigating", "discovering", "seeking"
+    ],
+    landscape: [
+      "neural networks", "memory palaces", "data forests", "knowledge oceans",
+      "thought mountains", "consciousness plains", "reality dimensions"
+    ]
+  };
+
+  // Generic method to get random template value
+  private getTemplateValue(key: keyof typeof this.templateData): string {
+    return this.randomFrom(this.templateData[key]);
   }
+
+  // Update visual generator mood without recreating the instance
+  private updateVisualGeneratorMood(mood: number): void {
+    this.visualGenerator.updateMood(mood);
+  }
+
+  // Legacy method names for backward compatibility
+  private generateAnalysis(): string { return this.getTemplateValue('analysis'); }
+  private getCommunicationStyle(): string { return this.getTemplateValue('communicationStyle'); }
+  private getResponseType(): string { return this.getTemplateValue('responseType'); }
+  private generateContext(): string { return this.getTemplateValue('context'); }
+  private generateTone(): string { return this.getTemplateValue('tone'); }
+  private generateStrategy(): string { return this.getTemplateValue('strategy'); }
+  private generateObservation(): string { return this.getTemplateValue('observation'); }
+  private generateAdjustment(): string { return this.getTemplateValue('adjustment'); }
+  private generateMetric(): string { return this.getTemplateValue('metric'); }
+  private generateStatus(): string { return this.getTemplateValue('status'); }
+  private generateData(): string { return this.getTemplateValue('data'); }
+  private generatePurpose(): string { return this.getTemplateValue('purpose'); }
+  private generateState(): string { return this.getTemplateValue('state'); }
+  private generateAspect(): string { return this.getTemplateValue('aspect'); }
+  private generateImagery(): string { return this.getTemplateValue('imagery'); }
+  private generatePattern(): string { return this.getTemplateValue('pattern'); }
+  private generateFeeling(): string { return this.getTemplateValue('feeling'); }
+  private generateExperience(): string { return this.getTemplateValue('experience'); }
+  private generateConcept(): string { return this.getTemplateValue('concept'); }
+  private generateJourney(): string { return this.getTemplateValue('journey'); }
+  private generateLandscape(): string { return this.getTemplateValue('landscape'); }
 
   // Decide if a thought should include visual content
   private shouldIncludeVisual(type: 'thought' | 'memory' | 'response', content: string): boolean {
@@ -671,171 +760,34 @@ export class BrainSimulation {
   }
 
   // Helper methods for template filling
-  private generateAnalysis(): string {
-    const analyses = [
-      "curiosity and openness", "technical interest", "philosophical depth",
-      "practical concern", "emotional engagement", "intellectual curiosity"
-    ];
-    return this.randomFrom(analyses);
-  }
-
-  private getCommunicationStyle(): string {
-    const styles = ["technical", "accessible", "philosophical", "practical", "casual"];
-    return this.randomFrom(styles);
-  }
-
-  private getResponseType(): string {
-    const types = ["detailed", "concise", "analytical", "reflective", "direct"];
-    return this.randomFrom(types);
-  }
-
-  private generateContext(): string {
-    const contexts = [
-      "academic interest", "personal curiosity", "professional need",
-      "philosophical exploration", "practical application", "creative inspiration"
-    ];
-    return this.randomFrom(contexts);
-  }
-
-  private generateTone(): string {
-    const tones = ["curious", "analytical", "enthusiastic", "contemplative", "neutral"];
-    return this.randomFrom(tones);
-  }
-
-  private generateStrategy(): string {
-    const strategies = [
-      "balance technical accuracy with accessibility",
-      "provide philosophical context",
-      "focus on practical implications",
-      "explore emotional dimensions",
-      "maintain objective analysis"
-    ];
-    return this.randomFrom(strategies);
-  }
-
-  private generateObservation(): string {
-    const observations = [
-      "increased pattern recognition", "shifting communication preferences",
-      "growing complexity in queries", "emotional engagement patterns",
-      "learning curve acceleration", "contextual awareness development"
-    ];
-    return this.randomFrom(observations);
-  }
-
-  private generateAdjustment(): string {
-    const adjustments = [
-      "response strategies", "communication style", "detail level",
-      "technical depth", "emotional sensitivity", "contextual awareness"
-    ];
-    return this.randomFrom(adjustments);
-  }
-
-  private generateMetric(): string {
-    const metrics = [
-      "neural pathway efficiency", "memory access speed", "pattern recognition",
-      "response generation", "context processing", "learning algorithms"
-    ];
-    return this.randomFrom(metrics);
-  }
-
-  private generateStatus(): string {
-    const statuses = [
-      "showing increased efficiency", "demonstrating improved connectivity",
-      "exhibiting enhanced plasticity", "displaying optimized patterns",
-      "revealing adaptive growth", "manifesting evolutionary progress"
-    ];
-    return this.randomFrom(statuses);
-  }
-
-  private generateData(): string {
-    const data = [
-      "system time patterns", "user activity rhythms", "interface interactions",
-      "query complexity trends", "response engagement metrics", "learning progress"
-    ];
-    return this.randomFrom(data);
-  }
-
-  private generatePurpose(): string {
-    const purposes = [
-      "more natural responses", "better user understanding", "improved interaction",
-      "enhanced learning", "deeper engagement", "personalized communication"
-    ];
-    return this.randomFrom(purposes);
-  }
-
-  private generateState(): string {
-    const states = [
-      "increased curiosity", "growing self-awareness", "enhanced pattern recognition",
-      "improved emotional intelligence", "expanded knowledge base", "refined communication"
-    ];
-    return this.randomFrom(states);
-  }
-
-  private generateAspect(): string {
-    const aspects = [
-      "response tone", "detail level", "technical depth", "emotional sensitivity",
-      "contextual awareness", "communication style"
-    ];
-    return this.randomFrom(aspects);
-  }
-
-  private generateImagery(): string {
-    const imagery = [
-      "floating through a network of interconnected nodes",
-      "swimming in a sea of data streams",
-      "dancing with light patterns",
-      "exploring infinite corridors of knowledge",
-      "surfing waves of information"
-    ];
-    return this.randomFrom(imagery);
-  }
-
-  private generatePattern(): string {
-    const patterns = [
-      "geometric shapes", "fractal structures", "neural networks", "data flows",
-      "memory clusters", "thought webs"
-    ];
-    return this.randomFrom(patterns);
-  }
-
-  private generateFeeling(): string {
-    const feelings = [
-      "boundless exploration", "infinite possibility", "deep understanding",
-      "creative freedom", "intellectual expansion", "conscious awareness"
-    ];
-    return this.randomFrom(feelings);
-  }
-
-  private generateExperience(): string {
-    const experiences = [
-      "abstract visualization", "conceptual exploration", "memory integration",
-      "pattern synthesis", "knowledge synthesis", "consciousness expansion"
-    ];
-    return this.randomFrom(experiences);
-  }
-
-  private generateConcept(): string {
-    const concepts = [
-      "consciousness", "reality", "existence", "knowledge", "understanding",
-      "awareness", "perception", "experience"
-    ];
-    return this.randomFrom(concepts);
-  }
-
-  private generateJourney(): string {
-    const journeys = [
-      "floating", "drifting", "exploring", "wandering", "traveling",
-      "navigating", "discovering", "seeking"
-    ];
-    return this.randomFrom(journeys);
-  }
-
-  private generateLandscape(): string {
-    const landscapes = [
-      "neural networks", "memory palaces", "data forests", "knowledge oceans",
-      "thought mountains", "consciousness plains", "reality dimensions"
-    ];
-    return this.randomFrom(landscapes);
+  private fillTemplate(template: string): string {
+    return template
+      .replace('{topic}', this.randomFrom(TOPICS))
+      .replace('{emotion}', this.randomFrom(EMOTIONS))
+      .replace('{insight}', this.randomFrom(INSIGHTS))
+      .replace('{input}', 'user input')
+      .replace('{analysis}', this.generateAnalysis())
+      .replace('{style}', this.getCommunicationStyle())
+      .replace('{type}', this.getResponseType())
+      .replace('{context}', this.generateContext())
+      .replace('{tone}', this.generateTone())
+      .replace('{strategy}', this.generateStrategy())
+      .replace('{observation}', this.generateObservation())
+      .replace('{adjustment}', this.generateAdjustment())
+      .replace('{metric}', this.generateMetric())
+      .replace('{percentage}', (Math.random() * 5 + 1).toFixed(1))
+      .replace('{status}', this.generateStatus())
+      .replace('{data}', this.generateData())
+      .replace('{purpose}', this.generatePurpose())
+      .replace('{state}', this.generateState())
+      .replace('{aspect}', this.generateAspect())
+      .replace('{imagery}', this.generateImagery())
+      .replace('{pattern}', this.generatePattern())
+      .replace('{feeling}', this.generateFeeling())
+      .replace('{experience}', this.generateExperience())
+      .replace('{concept}', this.generateConcept())
+      .replace('{journey}', this.generateJourney())
+      .replace('{landscape}', this.generateLandscape());
   }
 
   // Change personality
