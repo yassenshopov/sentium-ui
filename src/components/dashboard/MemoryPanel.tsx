@@ -206,7 +206,7 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
                       
                       {activity.type === 'response' && activity.inResponseTo && (
                         <div className="text-xs text-muted-foreground">
-                          <span className="font-medium">In response to:</span> "{activity.inResponseTo}"
+                          <span className="font-medium">In response to:</span> &quot;{activity.inResponseTo}&quot;
                         </div>
                       )}
                       

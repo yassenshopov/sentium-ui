@@ -239,7 +239,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
                   key={key}
                   variant={view === key ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setView(key as any)}
+                  onClick={() => setView(key as 'table' | 'network' | 'cards')}
                   className="text-xs h-8"
                 >
                   <Icon className="w-3 h-3 mr-1" />
@@ -265,7 +265,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
                   key={key}
                   variant={filter === key ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setFilter(key as any)}
+                  onClick={() => setFilter(key as 'all' | 'experience' | 'fact' | 'conversation' | 'insight' | 'pattern')}
                   className="text-xs"
                 >
                   {getMemoryIcon(key)}
@@ -282,7 +282,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
               <span className="text-sm font-medium text-muted-foreground">Sort:</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'importance' | 'recent' | 'access')}
                 className="text-xs bg-muted border border-border rounded px-2 py-1 cursor-pointer"
               >
                 <option value="importance">Importance</option>

@@ -53,30 +53,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isFullscreen, isDownloading]);
 
-  useEffect(() => {
-    if (type === 'canvas' && canvasRef.current) {
-      renderCanvas(canvasRef.current, data as CanvasData);
-    } else if (type === 'pattern' && canvasRef.current) {
-      renderPattern(canvasRef.current, data as PatternData);
-    }
-  }, [type, data]);
-
-  useEffect(() => {
-    if (isFullscreen && fullscreenCanvasRef.current) {
-      setIsFullscreenLoading(true);
-      // Small delay to show loading state
-      setTimeout(() => {
-        if (type === 'canvas') {
-          renderCanvas(fullscreenCanvasRef.current!, data as CanvasData, true);
-        } else if (type === 'pattern') {
-          renderPattern(fullscreenCanvasRef.current!, data as PatternData, true);
-        }
-        setIsFullscreenLoading(false);
-      }, 100);
-    }
-  }, [isFullscreen, type, data]);
-
-  const renderCanvas = (canvas: HTMLCanvasElement, canvasData: CanvasData, isFullscreenMode = false) => {
+  const renderCanvas = (canvas: HTMLCanvasElement, canvasData: CanvasData) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -139,7 +116,7 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     ctx.globalAlpha = 1;
   };
 
-  const renderPattern = (canvas: HTMLCanvasElement, patternData: PatternData, isFullscreenMode = false) => {
+  const renderPattern = (canvas: HTMLCanvasElement, patternData: PatternData) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -262,6 +239,29 @@ const VisualRenderer: React.FC<VisualRendererProps> = ({
     }
     ctx.globalAlpha = 1;
   };
+
+  useEffect(() => {
+    if (type === 'canvas' && canvasRef.current) {
+      renderCanvas(canvasRef.current, data as CanvasData);
+    } else if (type === 'pattern' && canvasRef.current) {
+      renderPattern(canvasRef.current, data as PatternData);
+    }
+  }, [type, data, renderPattern]);
+
+  useEffect(() => {
+    if (isFullscreen && fullscreenCanvasRef.current) {
+      setIsFullscreenLoading(true);
+      // Small delay to show loading state
+      setTimeout(() => {
+        if (type === 'canvas') {
+          renderCanvas(fullscreenCanvasRef.current!, data as CanvasData);
+        } else if (type === 'pattern') {
+          renderPattern(fullscreenCanvasRef.current!, data as PatternData);
+        }
+        setIsFullscreenLoading(false);
+      }, 100);
+    }
+  }, [isFullscreen, type, data, renderPattern]);
 
   const downloadCanvas = async (canvas: HTMLCanvasElement, filename: string) => {
     try {
