@@ -1,0 +1,40 @@
+{
+  "thoughts": [
+    {
+      "id": "1",
+      "content": "Compact representation",
+      "timestamp": "2023-01-01T09:40:00.000Z",
+      "type": "reflection"
+    },
+    {
+      "id": "2",
+      "content": "Evaluating input data",
+      "timestamp": "2023-01-01T09:20:00.000Z",
+      "type": "response"
+    },
+    {
+      "id": "3",
+      "content": "Memory consolidation",
+      "timestamp": "2023-01-01T09:10:00.000Z",
+      "type": "internal"
+    },
+    {
+      "id": "4",
+      "content": "Processing stimulus",
+      "timestamp": "2023-01-01T08:45:00.000Z",
+      "type": "internal"
+    }
+  ],
+  "brainState": {
+    "energy": 78,
+    "focus": 62,
+    "mood": 15,
+    "uptime": 5400,
+    "lastActivity": "2023-01-01T09:40:00.000Z",
+    "variables": {
+      "neuroplasticity": 0.8,
+      "stress": 0.2,
+      "curiosity": 0.7
+    }
+  }
+} 
