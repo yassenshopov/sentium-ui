@@ -1,11 +1,13 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
+  { label: "Brains", href: "/brains" },
   { label: "Docs", href: "#" },
   { label: "Components", href: "#" },
   { label: "Blocks", href: "#" },
@@ -17,7 +19,7 @@ export default function Header() {
     <header className="sticky top-0 z-30 w-full bg-background/80 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-4">
         {/* Left: Logo/Title */}
-        <span className="flex items-center gap-2 select-none">
+        <Link href="/" className="flex items-center gap-2 select-none hover:opacity-80 transition-opacity">
           <Image
             src="/sentium-logo.svg"
             alt="Sentium UI Logo"
@@ -26,7 +28,7 @@ export default function Header() {
             className="h-10 w-10"
           />
           <span className="text-xl font-bold tracking-tight text-foreground">Sentium UI</span>
-        </span>
+        </Link>
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-2">
           {NAV_LINKS.map((link) => (
@@ -62,7 +64,7 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-64 p-0 flex flex-col border-l border-border bg-background">
               <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                <span className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                   <Image
                     src="/sentium-logo.svg"
                     alt="Sentium UI Logo"
@@ -71,7 +73,7 @@ export default function Header() {
                     className="h-9 w-9"
                   />
                   <span className="text-lg font-bold">Sentium UI</span>
-                </span>
+                </Link>
                 <SheetTrigger asChild>
                   <button className="p-2 rounded-md hover:bg-muted focus:outline-none">
                     <X className="h-6 w-6" />

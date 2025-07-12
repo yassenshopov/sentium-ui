@@ -19,6 +19,8 @@ import VisualRenderer from "../ui/visual-renderer";
 
 interface MemoryDatabaseProps {
   brainActivity: BrainActivity[];
+  color?: string;
+  accentColor?: string;
 }
 
 // interface MemoryNode {
@@ -42,7 +44,7 @@ interface MemoryDatabaseProps {
 //   };
 // }
 
-const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
+const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity, color = '#10B981', accentColor = '#34D399' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [view, setView] = useState<'table' | 'network' | 'cards'>('table');
   const [filter, setFilter] = useState<'all' | 'experience' | 'fact' | 'conversation' | 'insight' | 'pattern'>('all');
@@ -179,11 +181,15 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
   };
 
   const getImportanceColor = (importance: number) => {
-    if (importance >= 80) return 'text-red-500';
-    if (importance >= 60) return 'text-orange-500';
-    if (importance >= 40) return 'text-yellow-500';
-    return 'text-green-500';
+    if (importance >= 80) return `color: ${accentColor}; font-weight: bold;`;
+    if (importance >= 60) return `color: ${color}; font-weight: bold; opacity: 0.85;`;
+    if (importance >= 40) return `color: ${accentColor}; opacity: 0.7;`;
+    return `color: ${color}; opacity: 0.6;`;
   };
+
+  // Use color for header and badges
+  const headerBg = `linear-gradient(135deg, ${color}, ${accentColor})`;
+  const headerText = '#fff';
 
   return (
     <motion.div
@@ -198,16 +204,15 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex items-center gap-3 mb-6 w-full"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <Database className="w-5 h-5 text-primary-foreground" />
+          <div
+            className="p-3 rounded-lg shadow"
+            style={{ background: headerBg, color: headerText }}
+          >
+            <Database className="w-6 h-6" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-foreground">
-              Memory Database
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Knowledge structure & associations
-            </p>
+            <h2 className="text-xl font-bold" style={{ color: color }}>{'Memory Database'}</h2>
+            <p className="text-sm text-muted-foreground">Knowledge structure & associations</p>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-xs">
@@ -241,6 +246,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
                   size="sm"
                   onClick={() => setView(key as 'table' | 'network' | 'cards')}
                   className="text-xs h-8"
+                  style={view === key ? { background: accentColor, color: '#fff', borderColor: accentColor } : { background: color + '10', color: color, borderColor: color + '22' }}
                 >
                   <Icon className="w-3 h-3 mr-1" />
                   {label}
@@ -267,6 +273,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity }) => {
                   size="sm"
                   onClick={() => setFilter(key as 'all' | 'experience' | 'fact' | 'conversation' | 'insight' | 'pattern')}
                   className="text-xs"
+                  style={filter === key ? { background: accentColor, color: '#fff', borderColor: accentColor } : { background: color + '10', color: color, borderColor: color + '22' }}
                 >
                   {getMemoryIcon(key)}
                   <span className="ml-1">{label}</span>

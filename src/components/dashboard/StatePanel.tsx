@@ -19,9 +19,11 @@ import {
 
 interface StatePanelProps {
   brainState: BrainState;
+  color?: string;
+  accentColor?: string;
 }
 
-const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
+const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', accentColor = '#60A5FA' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [pulseEnergy, setPulseEnergy] = useState(false);
   // const { theme } = useTheme();
@@ -54,9 +56,9 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState }) => {
   };
 
   const brainActivityData = [
-    { name: "Energy", value: brainState.energy, color: "hsl(var(--chart-1))", icon: Battery },
-    { name: "Focus", value: brainState.focus, color: "hsl(var(--chart-2))", icon: Target },
-    { name: "Mood", value: brainState.mood + 100, max: 200, color: "hsl(var(--chart-3))", icon: Brain },
+    { name: "Energy", value: brainState.energy, color: color, icon: Battery },
+    { name: "Focus", value: brainState.focus, color: accentColor, icon: Target },
+    { name: "Mood", value: brainState.mood + 100, max: 200, color: accentColor, icon: Brain },
   ];
 
   // ECG colors (same for both light and dark themes)

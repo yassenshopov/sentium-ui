@@ -17,12 +17,16 @@ import {
 
 interface ThoughtProcessPanelProps {
   thoughts: Thought[];
+  color?: string;
+  accentColor?: string;
 }
 
 type ViewStyle = 'streaming' | 'neural' | 'waveform' | 'cards';
 
 const ThoughtProcessPanel: React.FC<ThoughtProcessPanelProps> = ({
-  thoughts
+  thoughts,
+  color = '#8B5CF6',
+  accentColor = '#A78BFA'
 }) => {
   const [viewStyle, setViewStyle] = useState<ViewStyle>('streaming');
   const [showSearch, setShowSearch] = useState(false);
@@ -53,12 +57,17 @@ const ThoughtProcessPanel: React.FC<ThoughtProcessPanelProps> = ({
     return matchesFilter && matchesSearch;
   });
 
+  // Use color for header and highlights
+  const headerBg = `linear-gradient(135deg, ${color}, ${accentColor})`;
+  const headerText = '#fff';
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600">
+            <div className="p-2 rounded-lg shadow"
+                 style={{ background: headerBg, color: headerText }}>
               <Brain className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -85,14 +94,20 @@ const ThoughtProcessPanel: React.FC<ThoughtProcessPanelProps> = ({
           <div className="flex gap-1 p-1 bg-muted rounded-lg">
             {viewStyles.map((style) => {
               const Icon = style.icon;
+              const isActive = viewStyle === style.id;
               return (
                 <Button
                   key={style.id}
-                  variant={viewStyle === style.id ? "default" : "ghost"}
+                  variant={isActive ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewStyle(style.id)}
-                  className="h-8 px-3 text-xs cursor-pointer"
+                  className={`h-8 px-3 text-xs cursor-pointer ${isActive ? '' : ''}`}
                   title={style.description}
+                  style={isActive ? {
+                    background: headerBg,
+                    color: '#fff',
+                    boxShadow: `0 2px 8px 0 ${color}22`
+                  } : {}}
                 >
                   <Icon className="w-3 h-3 mr-1" />
                   {style.label}
@@ -130,21 +145,39 @@ const ThoughtProcessPanel: React.FC<ThoughtProcessPanelProps> = ({
       <CardContent className="flex-1 overflow-hidden">
         {/* Filter Tabs */}
         <div className="flex items-center gap-1 mb-4 overflow-x-auto pb-2">
-          {filters.map((filter) => (
-            <Button
-              key={filter.id}
-              variant={currentFilter === filter.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setCurrentFilter(filter.id)}
-              className="flex-shrink-0 cursor-pointer"
-            >
-              <Filter className="w-3 h-3 mr-1" />
-              {filter.label}
-              <Badge variant="secondary" className="ml-1 text-xs">
-                {filter.count}
-              </Badge>
-            </Button>
-          ))}
+          {filters.map((filter) => {
+            const isActive = currentFilter === filter.id;
+            return (
+              <Button
+                key={filter.id}
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentFilter(filter.id)}
+                className="flex-shrink-0 cursor-pointer"
+                style={isActive ? {
+                  background: headerBg,
+                  color: '#fff',
+                  boxShadow: `0 2px 8px 0 ${color}22`
+                } : {}}
+              >
+                <Filter className="w-3 h-3 mr-1" />
+                {filter.label}
+                <Badge
+                  variant="secondary"
+                  className="ml-1 text-xs"
+                  style={isActive ? {
+                    background: '#fff',
+                    color: color
+                  } : {
+                    background: `${color}22`,
+                    color: color
+                  }}
+                >
+                  {filter.count}
+                </Badge>
+              </Button>
+            );
+          })}
         </div>
 
         {/* Thoughts Container */}

@@ -41,6 +41,9 @@ interface TabbedInterfaceProps {
   brainActivity: BrainActivity[];
   currentPersonality: PersonalityType;
   onPersonalityChange: (personality: PersonalityType) => void;
+  color?: string;
+  accentColor?: string;
+  brainIcon?: React.ElementType;
 }
 
 type TabType = 'conversation' | 'memories' | 'thoughts' | 'system';
@@ -89,9 +92,13 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
   isChannelOpen,
   brainActivity,
   currentPersonality,
-  onPersonalityChange
+  onPersonalityChange,
+  color = '#3B82F6',
+  accentColor = '#60A5FA',
+  brainIcon
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conversation');
+  const [hoveredTab, setHoveredTab] = useState<TabType | null>(null);
 
   const tabs = [
     {
@@ -143,6 +150,9 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
               brainState={brainState}
               onToggleChannel={onToggleChannel}
               isChannelOpen={isChannelOpen}
+              color={color}
+              accentColor={accentColor}
+              brainIcon={brainIcon}
             />
           </motion.div>
         );
@@ -157,7 +167,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
             transition={{ duration: 0.3 }}
             className="h-full"
           >
-            <MemoryDatabase brainActivity={brainActivity} />
+            <MemoryDatabase brainActivity={brainActivity} color={color} accentColor={accentColor} />
           </motion.div>
         );
       
@@ -180,6 +190,8 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                 metadata: activity.metadata,
                 visual: activity.visual
               }))}
+              color={color}
+              accentColor={accentColor}
             />
           </motion.div>
         );
@@ -247,44 +259,57 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              
+              const isHovered = hoveredTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex items-center gap-2 md:gap-3 px-3 md:px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${
+                  onMouseEnter={() => setHoveredTab(tab.id)}
+                  onMouseLeave={() => setHoveredTab(null)}
+                  className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all text-sm focus:outline-none relative overflow-hidden ${
                     isActive
-                      ? 'bg-background text-foreground border border-border/50'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                  }`}
+                      ? ''
+                      : 'hover:shadow-md'
+                  } cursor-pointer`}
+                  style={isActive ? {
+                    background: `linear-gradient(135deg, ${color}, ${accentColor})`,
+                    color: '#fff',
+                    boxShadow: `0 2px 16px 0 ${color}33, 0 0 0 2px ${accentColor}`,
+                    borderBottom: `3px solid ${accentColor}`,
+                    transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
+                  } : isHovered ? {
+                    background: `${color}22`,
+                    color: color,
+                    boxShadow: `0 2px 8px 0 ${color}11`,
+                    borderBottom: `3px solid ${accentColor}55`,
+                    transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
+                  } : {
+                    background: `${color}10`,
+                    color: color,
+                    borderBottom: `3px solid transparent`,
+                    transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
+                  }}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium text-sm hidden sm:inline">{tab.label}</span>
+                  <Icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
                   {tab.badge > 0 && (
-                    <Badge 
-                      variant={isActive ? "default" : "secondary"} 
-                      className="text-xs px-1.5 py-0.5 min-w-[20px] h-5"
+                    <span
+                      className="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold transition-all"
+                      style={isActive ? {
+                        background: '#fff',
+                        color: color
+                      } : {
+                        background: `${color}22`,
+                        color: color
+                      }}
                     >
                       {tab.badge}
-                    </Badge>
+                    </span>
                   )}
-                  
-                  {/* Active indicator */}
                   {isActive && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                  
-                  {/* Active dot indicator */}
-                  {isActive && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-background"
+                    <span
+                      className="absolute left-0 bottom-0 w-full h-1 rounded-b-xl"
+                      style={{ background: accentColor, opacity: 0.25 }}
                     />
                   )}
                 </button>
