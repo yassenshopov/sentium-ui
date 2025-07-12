@@ -51,6 +51,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   accentColor = '#60A5FA',
   brainIcon: BrainIconComponent = Brain
 }) => {
+  // Helper function to convert hex color to rgba with opacity
+  const hexToRgba = (hex: string, opacity: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -126,13 +133,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 ? ''
                 : ''
             }`} style={isChannelOpen ? {
-              background: accentColor + '15',
+              background: hexToRgba(accentColor, 0.08),
               color: accentColor,
-              borderColor: accentColor + '55'
+              borderColor: hexToRgba(accentColor, 0.33)
             } : {
-              background: color + '15',
+              background: hexToRgba(color, 0.08),
               color: color,
-              borderColor: color + '55'
+              borderColor: hexToRgba(color, 0.33)
             }}>
               {isChannelOpen ? (
                 <>
@@ -157,11 +164,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             style={isChannelOpen ? {
               color: accentColor,
               borderColor: accentColor,
-              background: accentColor + '10'
+              background: hexToRgba(accentColor, 0.06)
             } : {
               color: color,
               borderColor: color,
-              background: color + '10'
+              background: hexToRgba(color, 0.06)
             }}
           >
             {isChannelOpen ? 'Close Channel' : 'Open Channel'}
@@ -309,7 +316,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               style={{
                 minHeight: '44px',
                 maxHeight: '120px',
-                boxShadow: input && document.activeElement === textareaRef.current ? `0 0 0 2px ${accentColor}55` : undefined,
+                boxShadow: input && document.activeElement === textareaRef.current ? `0 0 0 2px ${hexToRgba(accentColor, 0.33)}` : undefined,
                 borderColor: input && document.activeElement === textareaRef.current ? accentColor : undefined
               }}
             />

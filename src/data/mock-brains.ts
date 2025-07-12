@@ -1,19 +1,4 @@
 import { Brain, timestampHelpers } from "../lib/types";
-import { 
-  Brain as BrainIcon,
-  Search,
-  Lightbulb,
-  Palette,
-  Eye,
-  Moon,
-  Building2,
-  Heart,
-  Zap,
-  Sun,
-  Snowflake,
-  Flame,
-  Leaf
-} from "lucide-react";
 
 export const mockBrains: Brain[] = [
   {
@@ -325,6 +310,32 @@ export const mockBrains: Brain[] = [
         empathy: 0.98,
         growth: 0.93,
         harmony: 0.91
+      }
+    }
+  },
+  {
+    id: "smoking-cinephile",
+    name: "Adonis",
+    description: "A mind that loves to smoke and watch movies. Often lost in deep reflection.",
+    personality: "stoic",
+    color: "#994411",
+    accentColor: "#994411",
+    status: "dreaming",
+    lastActivity: timestampHelpers.now(),
+    thoughtCount: 1247,
+    memoryCount: 892,
+    uptime: 86400, // 24 hours
+    tags: ["inquisitive", "learning", "exploration"],
+    icon: "Clapperboard",
+    capabilities: ["Deep Analysis", "Pattern Recognition", "Creative Thinking"],
+    currentState: {
+      energy: 85,
+      focus: 78,
+      mood: 25,
+      variables: {
+        curiosity: 0.9,
+        openness: 0.85,
+        creativity_index: 0.75
       }
     }
   }

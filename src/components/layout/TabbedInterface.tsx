@@ -98,6 +98,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
   brainIcon
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conversation');
+  const [hoveredTab, setHoveredTab] = useState<TabType | null>(null);
 
   const tabs = [
     {
@@ -258,10 +259,13 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+              const isHovered = hoveredTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  onMouseEnter={() => setHoveredTab(tab.id)}
+                  onMouseLeave={() => setHoveredTab(null)}
                   className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all text-sm focus:outline-none relative overflow-hidden ${
                     isActive
                       ? ''
@@ -273,25 +277,17 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                     boxShadow: `0 2px 16px 0 ${color}33, 0 0 0 2px ${accentColor}`,
                     borderBottom: `3px solid ${accentColor}`,
                     transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
+                  } : isHovered ? {
+                    background: `${color}22`,
+                    color: color,
+                    boxShadow: `0 2px 8px 0 ${color}11`,
+                    borderBottom: `3px solid ${accentColor}55`,
+                    transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
                   } : {
                     background: `${color}10`,
                     color: color,
                     borderBottom: `3px solid transparent`,
                     transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
-                  }}
-                  onMouseOver={e => {
-                    if (!isActive) {
-                      (e.currentTarget as HTMLElement).style.background = `${color}22`;
-                      (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 8px 0 ${color}11`;
-                      (e.currentTarget as HTMLElement).style.borderBottom = `3px solid ${accentColor}55`;
-                    }
-                  }}
-                  onMouseOut={e => {
-                    if (!isActive) {
-                      (e.currentTarget as HTMLElement).style.background = `${color}10`;
-                      (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                      (e.currentTarget as HTMLElement).style.borderBottom = '3px solid transparent';
-                    }
                   }}
                 >
                   <Icon className="w-5 h-5" />

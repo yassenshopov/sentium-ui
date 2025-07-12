@@ -51,13 +51,13 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity, color = '#3B82
   const getActivityColor = (type: BrainActivity['type']) => {
     switch (type) {
       case 'thought':
-        return `background-color: ${color}10; color: ${color}; border-color: ${color}20;`;
+        return `background-color: ${color}1a; color: ${color}; border-color: ${color}33;`;
       case 'memory':
-        return `background-color: ${accentColor}10; color: ${accentColor}; border-color: ${accentColor}20;`;
+        return `background-color: ${accentColor}1a; color: ${accentColor}; border-color: ${accentColor}33;`;
       case 'response':
-        return `background-color: ${color}10; color: ${color}; border-color: ${color}20;`;
+        return `background-color: ${color}1a; color: ${color}; border-color: ${color}33;`;
       default:
-        return `background-color: ${accentColor}10; color: ${accentColor}; border-color: ${accentColor}20;`;
+        return `background-color: ${accentColor}1a; color: ${accentColor}; border-color: ${accentColor}33;`;
     }
   };
 

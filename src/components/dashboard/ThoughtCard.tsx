@@ -132,7 +132,8 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
             repeat: isTyping ? Infinity : 0,
             ease: "easeInOut"
           }}
-          className={`flex-shrink-0 mt-1 ${getThoughtColor(thought.type).color}`}
+          className="flex-shrink-0 mt-1"
+          style={{ color: getThoughtColor(thought.type).color }}
         >
           {getThoughtIcon(thought.type)}
         </motion.div>
@@ -190,7 +191,10 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className={`p-2 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 ${getThoughtColor(thought.type).color}`}>
+          <div 
+            className="p-2 rounded-full bg-gradient-to-br from-primary/20 to-primary/10"
+            style={{ color: getThoughtColor(thought.type).color }}
+          >
             {getThoughtIcon(thought.type)}
           </div>
           <span className="text-xs text-muted-foreground">{formatTime(thought.timestamp)}</span>
@@ -256,7 +260,10 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-md ${getThoughtColor(thought.type).color}`}>
+          <div 
+            className="p-1.5 rounded-md"
+            style={{ color: getThoughtColor(thought.type).color }}
+          >
             {getThoughtIcon(thought.type)}
           </div>
           <span className="text-xs text-muted-foreground">{formatTime(thought.timestamp)}</span>

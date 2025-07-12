@@ -60,14 +60,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Thought Process
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Memory Database
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -77,24 +77,24 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground">Resources</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Documentation
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   API Reference
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Examples
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Community
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -104,24 +104,24 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground">About</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Project Vision
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Research
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Privacy
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <span className="text-muted-foreground cursor-default">
                   Terms
-                </Link>
+                </span>
               </li>
             </ul>
           </div>

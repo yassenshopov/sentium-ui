@@ -55,9 +55,6 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
     return `${minutes}m`;
   };
 
-  // Use color and accentColor for all highlights and progress bars
-  const mainColor = "hsl(var(--chart-1))";
-  const accent = "hsl(var(--chart-2))";
   const brainActivityData = [
     { name: "Energy", value: brainState.energy, color: color, icon: Battery },
     { name: "Focus", value: brainState.focus, color: accentColor, icon: Target },

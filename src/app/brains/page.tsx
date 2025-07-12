@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain } from "../../lib/types";
 import { mockBrains } from "../../data/mock-brains";
@@ -29,6 +29,9 @@ export default function BrainsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedBrain, setSelectedBrain] = useState<Brain | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Ref to store timeout ID for cleanup
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Filter brains based on search and filters
   const filteredBrains = useMemo(() => {
@@ -53,12 +56,26 @@ export default function BrainsPage() {
   const handleConnectToBrain = () => {
     if (selectedBrain) {
       setIsLoading(true);
-      setTimeout(() => {
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      // Store the new timeout ID
+      timeoutRef.current = setTimeout(() => {
         router.push(`/brains/${selectedBrain.id}`);
         setIsLoading(false);
       }, 700); // Simulate loading delay
     }
   };
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const getStatusCount = (status: string) => {
     if (status === "all") return mockBrains.length;

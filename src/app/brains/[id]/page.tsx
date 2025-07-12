@@ -23,7 +23,8 @@ import {
   Sun,
   Snowflake,
   Flame,
-  Leaf
+  Leaf,
+  Clapperboard
 } from "lucide-react";
 import { CanvasData, PatternData } from "../../../lib/types";
 import { mockBrains } from "../../../data/mock-brains";
@@ -50,6 +51,7 @@ export default function BrainDashboard() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isChannelOpen, setIsChannelOpen] = useState(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
   
   // Ref to track current channel state to avoid stale closures
   const channelOpenRef = useRef(isChannelOpen);
@@ -84,6 +86,9 @@ export default function BrainDashboard() {
 
   const handleSendMessage = async (message: string) => {
     if (message.trim() && isChannelOpen) {
+      // Clear any previous errors
+      setProcessingError(null);
+      
       // Add user message to chat immediately
       const userMessage: ChatMessage = {
         id: `user-${crypto.randomUUID()}`,
@@ -104,20 +109,39 @@ export default function BrainDashboard() {
       );
       
       setTimeout(() => {
-        // Process the input through the brain simulation
-        const response = processInput(message);
-        if (response) {
-          // Add brain response to chat
-          const brainMessage: ChatMessage = {
-            id: `brain-${crypto.randomUUID()}`,
+        try {
+          // Process the input through the brain simulation
+          const response = processInput(message);
+          if (response) {
+            // Add brain response to chat
+            const brainMessage: ChatMessage = {
+              id: `brain-${crypto.randomUUID()}`,
+              type: 'brain',
+              content: response.content,
+              timestamp: new Date(),
+              visual: response.visual
+            };
+            setChatMessages(prev => [...prev, brainMessage]);
+          }
+        } catch (error) {
+          // Log the error for debugging
+          console.error('Error processing brain input:', error);
+          
+          // Set error state for UI feedback
+          setProcessingError(error instanceof Error ? error.message : 'An unexpected error occurred while processing your message');
+          
+          // Add error message to chat
+          const errorMessage: ChatMessage = {
+            id: `error-${crypto.randomUUID()}`,
             type: 'brain',
-            content: response.content,
-            timestamp: new Date(),
-            visual: response.visual
+            content: "I'm sorry, but I encountered an error while processing your message. Please try again.",
+            timestamp: new Date()
           };
-          setChatMessages(prev => [...prev, brainMessage]);
+          setChatMessages(prev => [...prev, errorMessage]);
+        } finally {
+          // Always reset processing state, regardless of success or failure
+          setIsProcessing(false);
         }
-        setIsProcessing(false);
       }, thinkingTime);
     }
   };
@@ -285,7 +309,8 @@ export default function BrainDashboard() {
     Sun,
     Snowflake,
     Flame,
-    Leaf
+    Leaf,
+    Clapperboard
   };
   const brainIcon = selectedBrain.icon && iconMap[selectedBrain.icon] ? iconMap[selectedBrain.icon] : BrainIcon;
 
