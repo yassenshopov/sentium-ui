@@ -13,17 +13,17 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      // Disable unused variable warnings for development
-      "@typescript-eslint/no-unused-vars": "off",
+      // Warn about unused variables instead of disabling completely
+      "@typescript-eslint/no-unused-vars": "warn",
       
       // Allow explicit any for now (can be tightened later)
       "@typescript-eslint/no-explicit-any": "warn",
       
-      // Disable exhaustive deps warning for now
-      "react-hooks/exhaustive-deps": "off",
+      // Warn about missing dependencies in useEffect hooks
+      "react-hooks/exhaustive-deps": "warn",
       
-      // Disable unescaped entities rule that's causing build failures
-      "react/no-unescaped-entities": "off",
+      // Warn about unescaped entities instead of disabling completely
+      "react/no-unescaped-entities": "warn",
     },
   },
 ];

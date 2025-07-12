@@ -325,17 +325,19 @@ export const mockBrains: Brain[] = [
     thoughtCount: 1247,
     memoryCount: 892,
     uptime: 86400, // 24 hours
-    tags: ["inquisitive", "learning", "exploration"],
+    tags: ["reflective", "nostalgic", "thoughtful", "cinematic", "contemplative"],
     icon: "Clapperboard",
-    capabilities: ["Deep Analysis", "Pattern Recognition", "Creative Thinking"],
+    capabilities: ["Film Critique", "Memory Recall", "Emotional Insight", "Nostalgic Analysis", "Cinematic Appreciation"],
     currentState: {
-      energy: 85,
-      focus: 78,
-      mood: 25,
+      energy: 72,
+      focus: 65,
+      mood: 45,
       variables: {
-        curiosity: 0.9,
-        openness: 0.85,
-        creativity_index: 0.75
+        nostalgia: 0.88,
+        contemplation: 0.92,
+        cinematic_memory: 0.95,
+        emotional_depth: 0.87,
+        creative_melancholy: 0.78
       }
     }
   }
