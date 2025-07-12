@@ -16,9 +16,11 @@ import ThoughtCard from "./ThoughtCard";
 
 interface MemoryPanelProps {
   brainActivity: BrainActivity[];
+  color?: string;
+  accentColor?: string;
 }
 
-const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
+const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity, color = '#3B82F6', accentColor = '#60A5FA' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [filter, setFilter] = useState<'all' | 'thought' | 'memory' | 'response'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,13 +51,13 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
   const getActivityColor = (type: BrainActivity['type']) => {
     switch (type) {
       case 'thought':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
+        return `background-color: ${color}10; color: ${color}; border-color: ${color}20;`;
       case 'memory':
-        return 'bg-green-500/10 text-green-600 border-green-500/20';
+        return `background-color: ${accentColor}10; color: ${accentColor}; border-color: ${accentColor}20;`;
       case 'response':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/20';
+        return `background-color: ${color}10; color: ${color}; border-color: ${color}20;`;
       default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+        return `background-color: ${accentColor}10; color: ${accentColor}; border-color: ${accentColor}20;`;
     }
   };
 
@@ -191,6 +193,8 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity }) => {
                         metadata: activity.metadata,
                         visual: activity.visual
                       }}
+                      color={color}
+                      accentColor={accentColor}
                     />
                     
                     {/* Additional Info for Different Types */}

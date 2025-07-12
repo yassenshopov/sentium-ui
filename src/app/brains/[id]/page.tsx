@@ -19,7 +19,11 @@ import {
   Moon,
   Building2,
   Heart,
-  Zap
+  Zap,
+  Sun,
+  Snowflake,
+  Flame,
+  Leaf
 } from "lucide-react";
 import { CanvasData, PatternData } from "../../../lib/types";
 import { mockBrains } from "../../../data/mock-brains";
@@ -256,19 +260,6 @@ export default function BrainDashboard() {
   }, [heroPalette]);
   // --- END: Dynamic Floating Brains Config ---
 
-  // Icon map for dynamic icon rendering
-  const iconMap: Record<string, React.ElementType> = {
-    Brain: BrainIcon,
-    Search,
-    Lightbulb,
-    Palette,
-    Eye,
-    Moon,
-    Building2,
-    Heart,
-    Zap
-  };
-
   if (!selectedBrain) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -279,6 +270,24 @@ export default function BrainDashboard() {
       </div>
     );
   }
+
+  // Icon map for dynamic icon rendering (must be after selectedBrain null check)
+  const iconMap: Record<string, React.ElementType> = {
+    Brain: BrainIcon,
+    Search,
+    Lightbulb,
+    Palette,
+    Eye,
+    Moon,
+    Building2,
+    Heart,
+    Zap,
+    Sun,
+    Snowflake,
+    Flame,
+    Leaf
+  };
+  const brainIcon = selectedBrain.icon && iconMap[selectedBrain.icon] ? iconMap[selectedBrain.icon] : BrainIcon;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -415,6 +424,7 @@ export default function BrainDashboard() {
               onPersonalityChange={() => {}} // Disabled for individual brain pages
               color={selectedBrain.color}
               accentColor={selectedBrain.accentColor}
+              brainIcon={brainIcon}
             />
           </motion.div>
         </div>

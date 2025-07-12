@@ -43,6 +43,7 @@ interface TabbedInterfaceProps {
   onPersonalityChange: (personality: PersonalityType) => void;
   color?: string;
   accentColor?: string;
+  brainIcon?: React.ElementType;
 }
 
 type TabType = 'conversation' | 'memories' | 'thoughts' | 'system';
@@ -93,7 +94,8 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
   currentPersonality,
   onPersonalityChange,
   color = '#3B82F6',
-  accentColor = '#60A5FA'
+  accentColor = '#60A5FA',
+  brainIcon
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conversation');
 
@@ -147,6 +149,9 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
               brainState={brainState}
               onToggleChannel={onToggleChannel}
               isChannelOpen={isChannelOpen}
+              color={color}
+              accentColor={accentColor}
+              brainIcon={brainIcon}
             />
           </motion.div>
         );
@@ -261,7 +266,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                     isActive
                       ? ''
                       : 'hover:shadow-md'
-                  }`}
+                  } cursor-pointer`}
                   style={isActive ? {
                     background: `linear-gradient(135deg, ${color}, ${accentColor})`,
                     color: '#fff',

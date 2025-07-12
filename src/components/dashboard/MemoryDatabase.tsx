@@ -181,10 +181,10 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity, color = 
   };
 
   const getImportanceColor = (importance: number) => {
-    if (importance >= 80) return 'text-red-500';
-    if (importance >= 60) return 'text-orange-500';
-    if (importance >= 40) return 'text-yellow-500';
-    return 'text-green-500';
+    if (importance >= 80) return `color: ${accentColor}; font-weight: bold;`;
+    if (importance >= 60) return `color: ${color}; font-weight: bold; opacity: 0.85;`;
+    if (importance >= 40) return `color: ${accentColor}; opacity: 0.7;`;
+    return `color: ${color}; opacity: 0.6;`;
   };
 
   // Use color for header and badges
@@ -246,6 +246,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity, color = 
                   size="sm"
                   onClick={() => setView(key as 'table' | 'network' | 'cards')}
                   className="text-xs h-8"
+                  style={view === key ? { background: accentColor, color: '#fff', borderColor: accentColor } : { background: color + '10', color: color, borderColor: color + '22' }}
                 >
                   <Icon className="w-3 h-3 mr-1" />
                   {label}
@@ -272,6 +273,7 @@ const MemoryDatabase: React.FC<MemoryDatabaseProps> = ({ brainActivity, color = 
                   size="sm"
                   onClick={() => setFilter(key as 'all' | 'experience' | 'fact' | 'conversation' | 'insight' | 'pattern')}
                   className="text-xs"
+                  style={filter === key ? { background: accentColor, color: '#fff', borderColor: accentColor } : { background: color + '10', color: color, borderColor: color + '22' }}
                 >
                   {getMemoryIcon(key)}
                   <span className="ml-1">{label}</span>

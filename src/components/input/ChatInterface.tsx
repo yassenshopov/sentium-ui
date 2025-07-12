@@ -35,6 +35,9 @@ interface ChatInterfaceProps {
   brainState: BrainState;
   onToggleChannel: () => void;
   isChannelOpen: boolean;
+  color?: string;
+  accentColor?: string;
+  brainIcon?: React.ElementType;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -43,7 +46,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   isProcessing,
   brainState,
   onToggleChannel,
-  isChannelOpen
+  isChannelOpen,
+  color = '#3B82F6',
+  accentColor = '#60A5FA',
+  brainIcon: BrainIconComponent = Brain
 }) => {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -102,8 +108,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Chat Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <MessageCircle className="w-5 h-5 text-primary-foreground" />
+          <div className="p-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}>
+            <MessageCircle className="w-5 h-5" style={{ color: '#fff' }} />
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Communication Channel</h3>
@@ -115,19 +121,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="flex items-center gap-3">
           {/* Channel Status */}
           <div className="flex items-center gap-2">
-            <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs border transition-colors duration-200 ${
               isChannelOpen 
-                ? 'bg-green-500/10 text-green-600 border border-green-500/20' 
-                : 'bg-red-500/10 text-red-600 border border-red-500/20'
-            }`}>
+                ? ''
+                : ''
+            }`} style={isChannelOpen ? {
+              background: accentColor + '15',
+              color: accentColor,
+              borderColor: accentColor + '55'
+            } : {
+              background: color + '15',
+              color: color,
+              borderColor: color + '55'
+            }}>
               {isChannelOpen ? (
                 <>
-                  <Wifi className="w-3 h-3" />
+                  <Wifi className="w-3 h-3" style={{ color: accentColor }} />
                   <span>Connected</span>
                 </>
               ) : (
                 <>
-                  <WifiOff className="w-3 h-3" />
+                  <WifiOff className="w-3 h-3" style={{ color: color }} />
                   <span>Disconnected</span>
                 </>
               )}
@@ -137,9 +151,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           {/* Toggle Channel Button */}
           <Button
             onClick={onToggleChannel}
-            variant={isChannelOpen ? "outline" : "default"}
+            variant="outline"
             size="sm"
-            className="text-xs"
+            className="text-xs font-semibold border-2"
+            style={isChannelOpen ? {
+              color: accentColor,
+              borderColor: accentColor,
+              background: accentColor + '10'
+            } : {
+              color: color,
+              borderColor: color,
+              background: color + '10'
+            }}
           >
             {isChannelOpen ? 'Close Channel' : 'Open Channel'}
           </Button>
@@ -183,17 +206,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.type === 'brain' && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                    <Brain className="w-4 h-4 text-primary-foreground" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}>
+                    <BrainIconComponent className="w-4 h-4" style={{ color: '#fff' }} />
                   </div>
                 )}
                 
                 <div className={`max-w-[80%] ${message.type === 'user' ? 'order-first' : ''}`}>
                   <div className={`rounded-2xl px-4 py-3 ${
                     message.type === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
+                      ? ''
                       : 'bg-muted border border-border/50'
-                  }`}>
+                  }`} 
+                   style={message.type === 'user' ? {
+                     background: accentColor,
+                     color: '#fff'
+                   } : {}}
+                  >
                     <p className="text-sm leading-relaxed">{message.content}</p>
                     
                     {/* Visual content */}
@@ -276,17 +304,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onKeyPress={handleKeyPress}
               placeholder={isChannelOpen ? "Type your message..." : "Open the channel to start chatting"}
               disabled={!isChannelOpen || isProcessing}
-              className="w-full px-4 py-3 pr-12 text-sm bg-muted/50 border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 disabled:opacity-50"
+              className="w-full px-4 py-3 pr-12 text-sm bg-muted/50 border border-border rounded-xl resize-none focus:outline-none disabled:opacity-50"
               rows={1}
-              style={{ minHeight: '44px', maxHeight: '120px' }}
+              style={{
+                minHeight: '44px',
+                maxHeight: '120px',
+                boxShadow: input && document.activeElement === textareaRef.current ? `0 0 0 2px ${accentColor}55` : undefined,
+                borderColor: input && document.activeElement === textareaRef.current ? accentColor : undefined
+              }}
             />
             <Button
               onClick={handleSend}
               disabled={!input.trim() || !isChannelOpen || isProcessing}
               size="sm"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 border-2"
+              style={{
+                background: accentColor,
+                color: '#fff',
+                borderColor: accentColor
+              }}
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" style={{ color: '#fff' }} />
             </Button>
           </div>
         </div>

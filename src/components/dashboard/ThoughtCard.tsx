@@ -20,9 +20,11 @@ import {
 interface ThoughtCardProps {
   thought: Thought;
   viewStyle?: 'streaming' | 'neural' | 'waveform' | 'cards';
+  color?: string;
+  accentColor?: string;
 }
 
-const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streaming' }) => {
+const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streaming', color = '#3B82F6', accentColor = '#60A5FA' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -85,24 +87,24 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
   const getThoughtColor = (type?: string) => {
     switch (type) {
       case 'reflection':
-        return 'text-purple-500';
+        return { color: accentColor };
       case 'analysis':
-        return 'text-blue-500';
+        return { color: color };
       case 'wonder':
-        return 'text-yellow-500';
+        return { color: accentColor, opacity: 0.7 };
       case 'realization':
-        return 'text-green-500';
+        return { color: color, opacity: 0.7 };
       case 'question':
-        return 'text-orange-500';
+        return { color: accentColor, fontWeight: 'bold' };
       default:
-        return 'text-gray-500';
+        return { color: color, opacity: 0.5 };
     }
   };
 
   const getMoodIcon = (mood?: number) => {
     if (!mood) return null;
-    if (mood > 20) return <TrendingUp className="w-3 h-3 text-green-500" />;
-    if (mood < -20) return <TrendingDown className="w-3 h-3 text-red-500" />;
+    if (mood > 20) return <TrendingUp className="w-3 h-3" style={{ color: accentColor }} />;
+    if (mood < -20) return <TrendingDown className="w-3 h-3" style={{ color: color }} />;
     return null;
   };
 
@@ -130,7 +132,7 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
             repeat: isTyping ? Infinity : 0,
             ease: "easeInOut"
           }}
-          className={`flex-shrink-0 mt-1 ${getThoughtColor(thought.type)}`}
+          className={`flex-shrink-0 mt-1 ${getThoughtColor(thought.type).color}`}
         >
           {getThoughtIcon(thought.type)}
         </motion.div>
@@ -188,7 +190,7 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className={`p-2 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 ${getThoughtColor(thought.type)}`}>
+          <div className={`p-2 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 ${getThoughtColor(thought.type).color}`}>
             {getThoughtIcon(thought.type)}
           </div>
           <span className="text-xs text-muted-foreground">{formatTime(thought.timestamp)}</span>
@@ -254,7 +256,7 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-md ${getThoughtColor(thought.type)}`}>
+          <div className={`p-1.5 rounded-md ${getThoughtColor(thought.type).color}`}>
             {getThoughtIcon(thought.type)}
           </div>
           <span className="text-xs text-muted-foreground">{formatTime(thought.timestamp)}</span>
@@ -311,7 +313,10 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={`border transition-all hover:shadow-md ${getThoughtColor(thought.type).replace('text-', 'bg-').replace('-500', '-500/10 border-').replace('-500', '-500/20')}`}>
+      <Card
+        className="border transition-all hover:shadow-md"
+        style={{ background: `${accentColor}10`, borderColor: accentColor + '55' }}
+      >
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-1">

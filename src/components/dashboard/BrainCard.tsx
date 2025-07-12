@@ -17,7 +17,11 @@ import {
   Eye,
   Moon,
   Building2,
-  Heart
+  Heart,
+  Sun,
+  Snowflake,
+  Flame,
+  Leaf
 } from "lucide-react";
 import { timestampHelpers } from "../../lib/types";
 
@@ -31,7 +35,11 @@ const iconMap: Record<string, React.ElementType> = {
   Moon,
   Building2,
   Heart,
-  Zap
+  Zap,
+  Sun,
+  Snowflake,
+  Flame,
+  Leaf
 };
 
 interface BrainCardProps {

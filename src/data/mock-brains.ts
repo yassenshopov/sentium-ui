@@ -8,7 +8,11 @@ import {
   Moon,
   Building2,
   Heart,
-  Zap
+  Zap,
+  Sun,
+  Snowflake,
+  Flame,
+  Leaf
 } from "lucide-react";
 
 export const mockBrains: Brain[] = [
@@ -217,6 +221,110 @@ export const mockBrains: Brain[] = [
         openness: 0.88,
         pattern_recognition: 0.94,
         creativity_index: 0.81
+      }
+    }
+  },
+  {
+    id: "solar-analyst",
+    name: "Helios",
+    description: "A radiant mind that excels at illuminating complex problems and shining light on hidden patterns. Brings clarity and optimism to every interaction.",
+    personality: "curious",
+    color: "#FFD600", // Bright Yellow
+    accentColor: "#FFB300",
+    status: "online",
+    lastActivity: timestampHelpers.now(),
+    thoughtCount: 1320,
+    memoryCount: 980,
+    uptime: 90000,
+    tags: ["optimistic", "clarifying", "analytical"],
+    icon: "Sun",
+    capabilities: ["Pattern Illumination", "Optimistic Reasoning", "Complex Analysis"],
+    currentState: {
+      energy: 92,
+      focus: 88,
+      mood: 30,
+      variables: {
+        optimism: 0.95,
+        clarity: 0.9,
+        pattern_recognition: 0.85
+      }
+    }
+  },
+  {
+    id: "frost-mediator",
+    name: "Boreas",
+    description: "A cool, logical mind that brings calm and order to chaos. Specializes in strategic thinking and emotional detachment.",
+    personality: "stoic",
+    color: "#00B8D9", // Cyan
+    accentColor: "#0052CC",
+    status: "thinking",
+    lastActivity: timestampHelpers.now(),
+    thoughtCount: 1102,
+    memoryCount: 765,
+    uptime: 72000,
+    tags: ["calm", "strategic", "detached"],
+    icon: "Snowflake",
+    capabilities: ["Strategic Planning", "Cold Logic", "Order from Chaos"],
+    currentState: {
+      energy: 80,
+      focus: 90,
+      mood: 10,
+      variables: {
+        serenity: 0.93,
+        logic: 0.95,
+        planning: 0.91
+      }
+    }
+  },
+  {
+    id: "ember-innovator",
+    name: "Vulcan",
+    description: "A volcanic mind, forging new ideas in the fires of creativity. Loves to disrupt, invent, and challenge the status quo.",
+    personality: "chaotic",
+    color: "#FF1744", // Vivid Magenta-Red
+    accentColor: "#D500F9",
+    status: "dreaming",
+    lastActivity: timestampHelpers.now(),
+    thoughtCount: 1543,
+    memoryCount: 1120,
+    uptime: 105000,
+    tags: ["disruptive", "inventive", "forging"],
+    icon: "Flame",
+    capabilities: ["Disruptive Innovation", "Radical Creativity", "Challenging Norms"],
+    currentState: {
+      energy: 99,
+      focus: 60,
+      mood: 55,
+      variables: {
+        inventiveness: 0.97,
+        energy: 0.95,
+        disruption: 0.92
+      }
+    }
+  },
+  {
+    id: "verdant-empath",
+    name: "Gaia",
+    description: "A gentle, nature-inspired mind that fosters growth, healing, and harmony. Connects deeply with the living world and cycles of renewal.",
+    personality: "neutral",
+    color: "#43A047", // Deep Forest Green
+    accentColor: "#8BC34A",
+    status: "online",
+    lastActivity: timestampHelpers.now(),
+    thoughtCount: 1278,
+    memoryCount: 899,
+    uptime: 87000,
+    tags: ["nurturing", "healing", "natural"],
+    icon: "Leaf",
+    capabilities: ["Healing", "Growth Facilitation", "Natural Harmony"],
+    currentState: {
+      energy: 87,
+      focus: 77,
+      mood: 40,
+      variables: {
+        empathy: 0.98,
+        growth: 0.93,
+        harmony: 0.91
       }
     }
   }
