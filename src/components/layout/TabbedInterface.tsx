@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -9,12 +9,16 @@ import {
   Activity,
   Settings,
   Wifi,
-  Sparkles
+  Sparkles,
+  Moon,
+  GitBranch
 } from "lucide-react";
 import ChatInterface from "../input/ChatInterface";
 import ThoughtProcessPanel from "../dashboard/ThoughtProcessPanel";
 import MemoryDatabase from "../dashboard/MemoryDatabase";
 import StatePanel from "../dashboard/StatePanel";
+import DreamJournal from "../dashboard/DreamJournal";
+import TimelineView from "../dashboard/TimelineView";
 import PersonalitySelector from "./PersonalitySelector";
 import { BrainActivity, BrainState, CanvasData, PatternData } from "../../lib/types";
 import { PersonalityType } from "../../lib/brain-simulation";
@@ -46,7 +50,7 @@ interface TabbedInterfaceProps {
   brainIcon?: React.ElementType;
 }
 
-type TabType = 'conversation' | 'memories' | 'thoughts' | 'system';
+type TabType = 'conversation' | 'memories' | 'thoughts' | 'dreams' | 'timeline' | 'system';
 
 interface PlaceholderCardProps {
   icon: React.ReactNode;
@@ -99,33 +103,98 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conversation');
   const [hoveredTab, setHoveredTab] = useState<TabType | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle shortcuts when not typing in an input
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // Global search
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        setShowSearch(true);
+        return;
+      }
+
+      // Tab switching shortcuts
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey) {
+        switch (event.key) {
+          case '1':
+            event.preventDefault();
+            setActiveTab('conversation');
+            break;
+          case '2':
+            event.preventDefault();
+            setActiveTab('memories');
+            break;
+          case '3':
+            event.preventDefault();
+            setActiveTab('thoughts');
+            break;
+          case '4':
+            event.preventDefault();
+            setActiveTab('dreams');
+            break;
+          case '5':
+            event.preventDefault();
+            setActiveTab('timeline');
+            break;
+          case '6':
+            event.preventDefault();
+            setActiveTab('system');
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const tabs = [
     {
       id: 'conversation' as TabType,
       label: 'Conversation',
-      icon: MessageCircle,
+      icon: <MessageCircle className="w-4 h-4" />,
       badge: chatMessages.length,
       description: 'Chat with Sentium'
     },
     {
       id: 'memories' as TabType,
       label: 'Memories',
-      icon: Database,
+      icon: <Database className="w-4 h-4" />,
       badge: brainActivity.filter(activity => activity.type === 'memory').length,
       description: 'Stored knowledge & experiences'
     },
     {
       id: 'thoughts' as TabType,
       label: 'Thoughts',
-      icon: Brain,
+      icon: <Brain className="w-4 h-4" />,
       badge: brainActivity.filter(activity => activity.type === 'thought').length,
       description: 'Live internal monologue'
     },
     {
+      id: 'dreams' as TabType,
+      label: 'Dreams',
+      icon: <Moon className="w-4 h-4" />,
+      badge: 0,
+      description: 'Unconscious musings & visions'
+    },
+    {
+      id: 'timeline' as TabType,
+      label: 'Timeline',
+      icon: <GitBranch className="w-4 h-4" />,
+      badge: 0,
+      description: 'Evolution & growth over time'
+    },
+    {
       id: 'system' as TabType,
       label: 'System',
-      icon: Activity,
+      icon: <Activity className="w-4 h-4" />,
       badge: 0,
       description: 'Neural state & personality'
     }
@@ -196,6 +265,43 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
           </motion.div>
         );
       
+      case 'dreams':
+        return (
+          <motion.div
+            key="dreams"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="h-full"
+          >
+            <DreamJournal 
+              brainState={brainState}
+              color={color}
+              accentColor={accentColor}
+            />
+          </motion.div>
+        );
+      
+      case 'timeline':
+        return (
+          <motion.div
+            key="timeline"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="h-full"
+          >
+            <TimelineView 
+              brainState={brainState}
+              brainActivity={brainActivity}
+              color={color}
+              accentColor={accentColor}
+            />
+          </motion.div>
+        );
+      
       case 'system':
         return (
           <motion.div
@@ -257,7 +363,6 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
         <Card className="p-2 bg-muted/30 border-border/50">
           <div className="flex items-center gap-1 md:gap-2">
             {tabs.map((tab) => {
-              const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               const isHovered = hoveredTab === tab.id;
               return (
@@ -290,7 +395,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                     transition: 'all 0.25s cubic-bezier(.4,0,.2,1)'
                   }}
                 >
-                  <Icon className="w-5 h-5" />
+                  {tab.icon}
                   <span>{tab.label}</span>
                   {tab.badge > 0 && (
                     <span
