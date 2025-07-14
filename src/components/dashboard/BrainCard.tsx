@@ -22,7 +22,9 @@ import {
   Snowflake,
   Flame,
   Leaf,
-  Clapperboard
+  Clapperboard,
+  Target,
+  Smile
 } from "lucide-react";
 import { timestampHelpers } from "../../lib/types";
 
@@ -104,140 +106,93 @@ const BrainCard: React.FC<BrainCardProps> = ({ brain, onSelect, isSelected = fal
       whileTap={{ scale: 0.98 }}
     >
       <Card 
-        className={`relative cursor-pointer transition-all duration-200 w-full p-4 md:p-6 flex flex-col h-full ${
+        className={`relative cursor-pointer transition-all duration-200 w-full h-full flex flex-col justify-between p-4 md:p-6 ${
           isSelected 
-            ? 'ring-2 ring-primary shadow-lg' 
-            : 'hover:shadow-md hover:ring-1 hover:ring-border'
+            ? 'ring-2 ring-primary' 
+            : 'hover:ring-1 hover:ring-border'
         }`}
         onClick={() => onSelect(brain)}
       >
-        {/* Status indicator */}
-        <div className="absolute top-4 right-4 flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${getStatusColor(brain.status)}`} />
-          <span className="text-xs text-muted-foreground">
-            {getStatusText(brain.status)}
-          </span>
+        {/* Top Row: Icon, Name, Status */}
+        <div className="flex items-center gap-3 mb-2">
+          <div 
+            className="w-11 h-11 rounded-lg flex items-center justify-center text-2xl"
+            style={{ backgroundColor: brain.color + '22', color: brain.color }}
+          >
+            <LucideIcon className="w-7 h-7" />
+          </div>
+          <h3 className="font-bold text-lg truncate flex-1" style={{ color: brain.color }}>{brain.name}</h3>
+          <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(brain.status)}`} title={getStatusText(brain.status)} />
         </div>
 
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
-              style={{ 
-                backgroundColor: brain.color + '20',
-                color: brain.color 
-              }}
-            >
-              <LucideIcon className="w-7 h-7" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg truncate">{brain.name}</h3>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {brain.description}
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-4 flex-1 flex flex-col">
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1">
-            {brain.tags.slice(0, 3).map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="text-xs"
-                style={{ 
-                  backgroundColor: brain.accentColor + '20',
-                  color: brain.accentColor 
-                }}
-              >
-                {tag}
-              </Badge>
-            ))}
-            {brain.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{brain.tags.length - 3}
-              </Badge>
+        {/* Key Parameters Row */}
+        {brain.currentState && (
+          <div className="flex gap-2 mb-2">
+            {brain.currentState.energy !== undefined && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
+                <Zap className="w-3 h-3" /> {brain.currentState.energy}%
+              </span>
+            )}
+            {brain.currentState.focus !== undefined && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
+                <Target className="w-3 h-3" /> {brain.currentState.focus}%
+              </span>
+            )}
+            {brain.currentState.mood !== undefined && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
+                <Smile className="w-3 h-3" /> {brain.currentState.mood > 0 ? '+' : ''}{brain.currentState.mood}
+              </span>
             )}
           </div>
+        )}
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 text-sm">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <MessageSquare className="w-3 h-3" />
-              <span>{brain.thoughtCount.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <HardDrive className="w-3 h-3" />
-              <span>{brain.memoryCount.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>{formatUptime(brain.uptime)}</span>
-            </div>
-          </div>
+        {/* Description */}
+        <div className="text-sm text-muted-foreground mb-2 line-clamp-2">
+          {brain.description}
+        </div>
 
-          {/* Current State */}
-          {brain.currentState && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Activity className="w-3 h-3" />
-                <span>Current State</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {brain.currentState.energy !== undefined && (
-                  <div className="text-center">
-                    <div className="text-xs text-muted-foreground">Energy</div>
-                    <div className="flex items-center gap-1 justify-center">
-                      <Zap className="w-3 h-3 text-yellow-500" />
-                      <span className="text-sm font-medium">{brain.currentState.energy}%</span>
-                    </div>
-                  </div>
-                )}
-                {brain.currentState.focus !== undefined && (
-                  <div className="text-center">
-                    <div className="text-xs text-muted-foreground">Focus</div>
-                    <div className="flex items-center gap-1 justify-center">
-                      <BrainIcon className="w-3 h-3 text-blue-500" />
-                      <span className="text-sm font-medium">{brain.currentState.focus}%</span>
-                    </div>
-                  </div>
-                )}
-                {brain.currentState.mood !== undefined && (
-                  <div className="text-center">
-                    <div className="text-xs text-muted-foreground">Mood</div>
-                    <div className="text-sm font-medium">
-                      {brain.currentState.mood > 0 ? '+' : ''}{brain.currentState.mood}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1 mb-2">
+          {brain.tags.slice(0, 2).map((tag, index) => (
+            <Badge 
+              key={index} 
+              variant="outline" 
+              className="text-xs font-normal"
+              style={{ borderColor: brain.accentColor + '55', color: brain.accentColor }}
+            >
+              {tag}
+            </Badge>
+          ))}
+          {brain.tags.length > 2 && (
+            <Badge variant="outline" className="text-xs font-normal" style={{ borderColor: brain.accentColor + '55', color: brain.accentColor }}>
+              +{brain.tags.length - 2}
+            </Badge>
           )}
+        </div>
 
-          {/* Capabilities */}
-          <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Capabilities</div>
-            <div className="flex flex-wrap gap-1">
-              {brain.capabilities.slice(0, 2).map((capability, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {capability}
-                </Badge>
-              ))}
-              {brain.capabilities.length > 2 && (
-                <Badge variant="outline" className="text-xs">
-                  +{brain.capabilities.length - 2} more
-                </Badge>
-              )}
-            </div>
-          </div>
+        {/* Capabilities */}
+        <div className="flex gap-1 items-center mb-2">
+          <span className="text-xs text-muted-foreground">{brain.capabilities[0]}</span>
+          {brain.capabilities.length > 1 && (
+            <span className="text-xs text-muted-foreground">+{brain.capabilities.length - 1} more</span>
+          )}
+        </div>
 
-          {/* Last Activity */}
-          <div className="text-xs text-muted-foreground">
-            Last active: {timestampHelpers.formatForDisplay(brain.lastActivity)}
+        {/* Stats Row */}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-auto pt-2 border-t border-border/40">
+          <div className="flex items-center gap-1">
+            <MessageSquare className="w-3 h-3" />
+            <span>{brain.thoughtCount.toLocaleString()} thoughts</span>
           </div>
-        </CardContent>
+          <div className="flex items-center gap-1">
+            <HardDrive className="w-3 h-3" />
+            <span>{brain.memoryCount.toLocaleString()} memories</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            <span>{formatUptime(brain.uptime)}</span>
+          </div>
+        </div>
       </Card>
     </motion.div>
   );

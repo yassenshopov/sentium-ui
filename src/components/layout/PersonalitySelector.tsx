@@ -8,6 +8,8 @@ import { Brain, Sparkles, Shield, Zap } from "lucide-react";
 interface PersonalitySelectorProps {
   currentPersonality: PersonalityType;
   onPersonalityChange: (personality: PersonalityType) => void;
+  color?: string;
+  accentColor?: string;
 }
 
 const personalityConfig = {
@@ -44,34 +46,45 @@ const personalityConfig = {
 const PersonalitySelector: React.FC<PersonalitySelectorProps> = ({
   currentPersonality,
   onPersonalityChange,
+  color = '#3B82F6',
+  accentColor = '#60A5FA',
 }) => {
   return (
-    <Card className="p-4 space-y-3">
+    <Card
+      className="p-4 space-y-3 border"
+      style={{
+        background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+        borderColor: color + '33',
+      }}
+    >
       <div className="flex items-center gap-2 mb-3">
-        <Brain className="w-4 h-4 text-muted-foreground" />
-        <h3 className="text-sm font-medium">Personality</h3>
+        <Brain className="w-4 h-4" style={{ color }} />
+        <h3 className="text-sm font-medium" style={{ color }}>Personality</h3>
       </div>
-      
       <div className="grid grid-cols-2 gap-2">
         {(Object.keys(personalityConfig) as PersonalityType[]).map((personality) => {
           const config = personalityConfig[personality];
           const Icon = config.icon;
           const isActive = personality === currentPersonality;
-          
           return (
             <motion.button
               key={personality}
               onClick={() => onPersonalityChange(personality)}
-              className={`relative p-3 rounded-lg border transition-all ${
-                isActive 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-border hover:border-primary/50 hover:bg-muted/50'
-              }`}
+              className={`relative p-3 rounded-lg border transition-all`}
+              style={isActive ? {
+                borderColor: color,
+                background: color + '10',
+                color: color,
+              } : {
+                borderColor: accentColor + '55',
+                background: accentColor + '05',
+                color: accentColor,
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1 rounded ${config.color}`}>
+                <div className="p-1 rounded" style={{ background: color }}>
                   <Icon className="w-3 h-3 text-white" />
                 </div>
                 <span className="text-xs font-medium">{config.name}</span>
@@ -79,20 +92,19 @@ const PersonalitySelector: React.FC<PersonalitySelectorProps> = ({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="w-2 h-2 rounded-full bg-primary"
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: accentColor }}
                   />
                 )}
               </div>
-              
               <p className="text-xs text-muted-foreground mb-2">
                 {config.description}
               </p>
-              
               <div className="flex flex-wrap gap-1">
                 {config.traits.map((trait, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary" 
+                  <Badge
+                    key={index}
+                    variant="secondary"
                     className="text-xs px-1 py-0"
                   >
                     {trait}
@@ -103,7 +115,6 @@ const PersonalitySelector: React.FC<PersonalitySelectorProps> = ({
           );
         })}
       </div>
-      
       <div className="pt-2 border-t border-border/50">
         <p className="text-xs text-muted-foreground">
           Changing personality affects thought patterns and response style

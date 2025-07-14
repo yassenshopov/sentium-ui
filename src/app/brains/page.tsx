@@ -350,30 +350,30 @@ export default function BrainsPage() {
           animate="visible"
         >
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 md:gap-6"
+            className="flex flex-col sm:flex-row flex-wrap gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-3"
             variants={staggerVariants}
           >
             {/* Search */}
-            <motion.div variants={itemVariants} className="relative flex-1">
+            <motion.div variants={itemVariants} className="relative flex-1 min-w-[160px]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Input
                   placeholder="Search brains by name, description, tags, or capabilities..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 w-full min-w-[160px] truncate"
                 />
               </motion.div>
             </motion.div>
 
             {/* Status Filter */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="min-w-[140px] w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
+                  <SelectTrigger className="min-w-[140px] w-full truncate">
+                    <SelectValue placeholder="Filter by status" className="truncate" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="min-w-[140px]">
                     <SelectItem value="all">
                       All Status ({getStatusCount("all")})
                     </SelectItem>
@@ -395,13 +395,13 @@ export default function BrainsPage() {
             </motion.div>
 
             {/* Personality Filter */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="min-w-[140px] w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Select value={personalityFilter} onValueChange={setPersonalityFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by personality" />
+                  <SelectTrigger className="min-w-[140px] w-full truncate">
+                    <SelectValue placeholder="Filter by personality" className="truncate" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="min-w-[140px]">
                     <SelectItem value="all">
                       All Personalities ({getPersonalityCount("all")})
                     </SelectItem>
@@ -503,7 +503,7 @@ export default function BrainsPage() {
               exit={{ opacity: 0 }}
               className={
                 viewMode === "grid" 
-                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10 items-stretch"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch"
                   : "space-y-4"
               }
             >
@@ -513,7 +513,7 @@ export default function BrainsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className={viewMode === "grid" ? "h-full min-w-[320px] max-w-xl w-full mx-auto flex" : "w-full"}
+                  className={viewMode === "grid" ? "min-w-0 w-full h-full flex" : "w-full"}
                 >
                   {viewMode === "grid" ? (
                     <BrainCard

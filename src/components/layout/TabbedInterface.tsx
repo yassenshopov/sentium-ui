@@ -54,34 +54,44 @@ type TabType = 'conversation' | 'memories' | 'thoughts' | 'dreams' | 'timeline' 
 
 interface PlaceholderCardProps {
   icon: React.ReactNode;
-  iconColor: string;
   title: string;
   subtitle: string;
   description: string;
   largeIcon: React.ReactNode;
+  color?: string;
+  accentColor?: string;
 }
 
-const PlaceholderCard: React.FC<PlaceholderCardProps> = ({ icon, iconColor, title, subtitle, description, largeIcon }) => (
-  <Card className="rounded-xl p-6 flex flex-col items-start w-full bg-gradient-to-br from-background to-secondary/20 border h-full">
+const PlaceholderCard: React.FC<PlaceholderCardProps> = ({ icon, title, subtitle, description, largeIcon, color = '#3B82F6', accentColor = '#60A5FA' }) => (
+  <Card
+    className="rounded-xl p-6 flex flex-col items-start w-full border h-full"
+    style={{
+      background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+      borderColor: color + '33',
+    }}
+  >
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.2, duration: 0.5 }}
       className="flex items-center gap-3 mb-6 w-full"
     >
-      <div className={`p-2 rounded-lg ${iconColor}`}>
+      <div
+        className="p-2 rounded-lg"
+        style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}
+      >
         {icon}
       </div>
       <div className="flex-1">
-        <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        <h2 className="text-xl font-bold" style={{ color }}>{title}</h2>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
     </motion.div>
     <div className="w-full space-y-4">
-      <div className="text-center py-8 text-muted-foreground">
+      <div className="flex flex-col items-center justify-center py-8 text-center">
         {largeIcon}
-        <p className="text-sm">{description}</p>
-        <p className="text-xs mt-1">Coming soon...</p>
+        <p className="text-sm text-muted-foreground mt-2">{description}</p>
+        <p className="text-xs text-muted-foreground mt-1">Coming soon...</p>
       </div>
     </div>
   </Card>
@@ -313,33 +323,35 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
             className="h-full"
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              <StatePanel brainState={brainState} />
+              <StatePanel brainState={brainState} color={color} accentColor={accentColor} />
               <PersonalitySelector
                 currentPersonality={currentPersonality}
                 onPersonalityChange={onPersonalityChange}
+                color={color}
+                accentColor={accentColor}
               />
-              
-              {/* Placeholder for future diagnostic cards */}
+              {/* Performance Card */}
               <div className="lg:col-span-2 xl:col-span-1">
                 <PlaceholderCard
                   icon={<Settings className="w-5 h-5 text-white" />}
-                  iconColor="bg-gradient-to-br from-blue-500 to-blue-600"
                   title="Performance"
                   subtitle="System performance metrics"
                   description="Performance monitoring"
                   largeIcon={<Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />}
+                  color={color}
+                  accentColor={accentColor}
                 />
               </div>
-              
-              {/* Another placeholder card */}
+              {/* Network Card */}
               <div className="lg:col-span-2 xl:col-span-1">
                 <PlaceholderCard
                   icon={<Wifi className="w-5 h-5 text-white" />}
-                  iconColor="bg-gradient-to-br from-green-500 to-green-600"
                   title="Network"
                   subtitle="Connection status & logs"
                   description="Network diagnostics"
                   largeIcon={<Wifi className="w-12 h-12 mx-auto mb-3 opacity-50" />}
+                  color={color}
+                  accentColor={accentColor}
                 />
               </div>
             </div>

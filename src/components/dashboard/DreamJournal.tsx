@@ -193,18 +193,27 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <Card className="rounded-xl p-6 flex flex-col items-start w-full bg-gradient-to-br from-background to-secondary/20 border">
+      <Card
+        className="rounded-xl p-6 flex flex-col items-start w-full border"
+        style={{
+          background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+          borderColor: color + '33',
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex items-center gap-3 mb-6 w-full"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <Moon className="w-5 h-5 text-primary-foreground" />
+          <div
+            className="p-2 rounded-lg"
+            style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}
+          >
+            <Moon className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-foreground">Dream Journal</h2>
+            <h2 className="text-xl font-bold" style={{ color }}>Dream Journal</h2>
             <p className="text-sm text-muted-foreground">Unconscious musings and nocturnal visions</p>
           </div>
           <div className="flex items-center gap-2">
@@ -217,12 +226,13 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
                 size="sm"
                 onClick={toggleDreaming}
                 className="gap-2"
+                style={isDreaming ? { background: color, color: '#fff' } : { borderColor: color, color }}
               >
                 {isDreaming ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 {isDreaming ? 'Dreaming' : 'Start Dreaming'}
               </Button>
             </motion.div>
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs" style={{ background: accentColor + '22', color: accentColor }}>
               {dreams.length} dreams
             </Badge>
           </div>
@@ -273,10 +283,32 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
                 size="sm"
                 onClick={() => setFilter(key)}
                 className="text-xs"
+                style={filter === key ? {
+                  background: color,
+                  color: '#fff',
+                  borderColor: color,
+                  boxShadow: `0 2px 8px 0 ${color}22`
+                } : {
+                  background: `${color}05`,
+                  color: color,
+                  borderColor: color + '33',
+                }}
               >
-                {getDreamIcon(key)}
+                <span style={{ color: filter === key ? '#fff' : color }}>
+                  {getDreamIcon(key)}
+                </span>
                 <span className="ml-1">{label}</span>
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge
+                  variant="secondary"
+                  className="ml-1 text-xs"
+                  style={filter === key ? {
+                    background: '#fff',
+                    color: color
+                  } : {
+                    background: accentColor + '22',
+                    color: accentColor
+                  }}
+                >
                   {count}
                 </Badge>
               </Button>

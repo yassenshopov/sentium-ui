@@ -52,12 +52,7 @@ interface TimelineViewProps {
   accentColor?: string;
 }
 
-const TimelineView: React.FC<TimelineViewProps> = ({ 
-  brainState, 
-  brainActivity,
-  color = '#10B981', 
-  accentColor = '#34D399' 
-}) => {
+const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, color = '#3B82F6', accentColor = '#60A5FA' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -296,18 +291,27 @@ const TimelineView: React.FC<TimelineViewProps> = ({
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <Card className="rounded-xl p-6 flex flex-col items-start w-full bg-gradient-to-br from-background to-secondary/20 border">
+      <Card
+        className="rounded-xl p-6 flex flex-col items-start w-full border"
+        style={{
+          background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+          borderColor: color + '33',
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex items-center gap-3 mb-6 w-full"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <GitBranch className="w-5 h-5 text-primary-foreground" />
+          <div
+            className="p-2 rounded-lg"
+            style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}
+          >
+            <GitBranch className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-foreground">Timeline</h2>
+            <h2 className="text-xl font-bold" style={{ color }}>Timeline</h2>
             <p className="text-sm text-muted-foreground">Evolution and growth over time</p>
           </div>
           <div className="flex items-center gap-2">
@@ -370,33 +374,33 @@ const TimelineView: React.FC<TimelineViewProps> = ({
           transition={{ delay: 0.3, duration: 0.5 }}
           className="w-full mb-6 grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          <div className="p-3 rounded-lg bg-muted/30 border">
+          <div className="p-3 rounded-lg border" style={{ background: accentColor + '10', borderColor: accentColor + '33' }}>
             <div className="flex items-center gap-2 mb-1">
-              <Star className="w-4 h-4 text-yellow-500" />
+              <Star className="w-4 h-4" style={{ color }} />
               <span className="text-xs text-muted-foreground">Milestones</span>
             </div>
-            <p className="text-lg font-bold">{filteredEvents.filter(e => e.type === 'milestone').length}</p>
+            <p className="text-lg font-bold" style={{ color }}>{filteredEvents.filter(e => e.type === 'milestone').length}</p>
           </div>
-          <div className="p-3 rounded-lg bg-muted/30 border">
+          <div className="p-3 rounded-lg border" style={{ background: accentColor + '10', borderColor: accentColor + '33' }}>
             <div className="flex items-center gap-2 mb-1">
-              <Lightbulb className="w-4 h-4 text-blue-500" />
+              <Lightbulb className="w-4 h-4" style={{ color: accentColor }} />
               <span className="text-xs text-muted-foreground">Breakthroughs</span>
             </div>
-            <p className="text-lg font-bold">{filteredEvents.filter(e => e.type === 'breakthrough').length}</p>
+            <p className="text-lg font-bold" style={{ color: accentColor }}>{filteredEvents.filter(e => e.type === 'breakthrough').length}</p>
           </div>
-          <div className="p-3 rounded-lg bg-muted/30 border">
+          <div className="p-3 rounded-lg border" style={{ background: accentColor + '10', borderColor: accentColor + '33' }}>
             <div className="flex items-center gap-2 mb-1">
-              <Target className="w-4 h-4 text-green-500" />
+              <Target className="w-4 h-4" style={{ color: accentColor }} />
               <span className="text-xs text-muted-foreground">Learnings</span>
             </div>
-            <p className="text-lg font-bold">{filteredEvents.filter(e => e.type === 'learning').length}</p>
+            <p className="text-lg font-bold" style={{ color: accentColor }}>{filteredEvents.filter(e => e.type === 'learning').length}</p>
           </div>
-          <div className="p-3 rounded-lg bg-muted/30 border">
+          <div className="p-3 rounded-lg border" style={{ background: accentColor + '10', borderColor: accentColor + '33' }}>
             <div className="flex items-center gap-2 mb-1">
-              <Activity className="w-4 h-4 text-purple-500" />
+              <Activity className="w-4 h-4" style={{ color: accentColor }} />
               <span className="text-xs text-muted-foreground">Interactions</span>
             </div>
-            <p className="text-lg font-bold">{filteredEvents.filter(e => e.type === 'interaction').length}</p>
+            <p className="text-lg font-bold" style={{ color: accentColor }}>{filteredEvents.filter(e => e.type === 'interaction').length}</p>
           </div>
         </motion.div>
 
@@ -408,25 +412,48 @@ const TimelineView: React.FC<TimelineViewProps> = ({
           className="w-full mb-6 space-y-3"
         >
           {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mb-4">
             {([
-              { key: 'all' as const, label: 'All Events', count: generateTimelineEvents.length },
-              { key: 'milestone' as const, label: 'Milestones', count: generateTimelineEvents.filter(e => e.type === 'milestone').length },
-              { key: 'breakthrough' as const, label: 'Breakthroughs', count: generateTimelineEvents.filter(e => e.type === 'breakthrough').length },
-              { key: 'learning' as const, label: 'Learnings', count: generateTimelineEvents.filter(e => e.type === 'learning').length },
-              { key: 'interaction' as const, label: 'Interactions', count: generateTimelineEvents.filter(e => e.type === 'interaction').length },
-              { key: 'dream' as const, label: 'Dreams', count: generateTimelineEvents.filter(e => e.type === 'dream').length },
-              { key: 'reflection' as const, label: 'Reflections', count: generateTimelineEvents.filter(e => e.type === 'reflection').length }
-            ] as const).map(({ key, label, count }) => (
+              { key: 'all', label: 'All Events', count: filteredEvents.length },
+              { key: 'milestone', label: 'Milestones', count: filteredEvents.filter(e => e.type === 'milestone').length },
+              { key: 'breakthrough', label: 'Breakthroughs', count: filteredEvents.filter(e => e.type === 'breakthrough').length },
+              { key: 'learning', label: 'Learnings', count: filteredEvents.filter(e => e.type === 'learning').length },
+              { key: 'interaction', label: 'Interactions', count: filteredEvents.filter(e => e.type === 'interaction').length },
+              { key: 'dream', label: 'Dreams', count: filteredEvents.filter(e => e.type === 'dream').length },
+              { key: 'reflection', label: 'Reflections', count: filteredEvents.filter(e => e.type === 'reflection').length },
+            ]).map(({ key, label, count }) => (
               <Button
                 key={key}
                 variant={filter === key ? "default" : "outline"}
                 size="sm"
-                onClick={() => setFilter(key)}
+                onClick={() => setFilter(key as any)}
                 className="text-xs"
+                style={filter === key ? {
+                  background: color,
+                  color: '#fff',
+                  borderColor: color,
+                  boxShadow: `0 2px 8px 0 ${color}22`
+                } : {
+                  background: `${color}05`,
+                  color: color,
+                  borderColor: color + '33',
+                }}
               >
-                {label}
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <span style={{ color: filter === key ? '#fff' : color }}>
+                  {/* You can add icons here if desired */}
+                </span>
+                <span className="ml-1">{label}</span>
+                <Badge
+                  variant="secondary"
+                  className="ml-1 text-xs"
+                  style={filter === key ? {
+                    background: '#fff',
+                    color: color
+                  } : {
+                    background: accentColor + '22',
+                    color: accentColor
+                  }}
+                >
                   {count}
                 </Badge>
               </Button>

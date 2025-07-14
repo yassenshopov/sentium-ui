@@ -75,20 +75,27 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <Card className="rounded-xl p-6 flex flex-col items-start w-full bg-gradient-to-br from-background to-secondary dark:from-background dark:to-secondary border">
+      <Card
+        className="rounded-xl p-6 flex flex-col items-start w-full border"
+        style={{
+          background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+          borderColor: color + '33',
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex items-center gap-3 mb-6"
+          className="flex items-center gap-3 mb-6 w-full"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <Activity className="w-5 h-5 text-primary-foreground" />
+          <div
+            className="p-2 rounded-lg"
+            style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}
+          >
+            <Battery className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground">
-              Neural State
-            </h2>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold" style={{ color }}>{'Neural State'}</h2>
             <p className="text-sm text-muted-foreground">Real-time brain metrics</p>
           </div>
         </motion.div>
