@@ -44,7 +44,9 @@ const iconMap: Record<string, React.ElementType> = {
   Snowflake,
   Flame,
   Leaf,
-  Clapperboard
+  Clapperboard,
+  Target,
+  Smile
 };
 
 interface BrainCardProps {

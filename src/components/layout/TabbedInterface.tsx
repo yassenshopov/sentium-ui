@@ -113,20 +113,12 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conversation');
   const [hoveredTab, setHoveredTab] = useState<TabType | null>(null);
-  const [showSearch, setShowSearch] = useState(false);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Only handle shortcuts when not typing in an input
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      // Global search
-      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-        event.preventDefault();
-        setShowSearch(true);
         return;
       }
 

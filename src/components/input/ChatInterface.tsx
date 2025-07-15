@@ -281,7 +281,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       )}
                     </div>
                     {/* Remove the tap-to-reveal hint on mobile */}
-                    {window.innerWidth < 768 && !showMeta && false && (
+                    {window.innerWidth < 768 && !showMeta && (
                       <div className="md:hidden text-xs text-muted-foreground text-center mt-1 opacity-60 select-none">Tap message for details</div>
                     )}
                   </div>
