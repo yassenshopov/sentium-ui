@@ -13,6 +13,7 @@ import {
   Search
 } from "lucide-react";
 import ThoughtCard from "./ThoughtCard";
+import { formatPercentage } from "../../lib/utils";
 
 interface MemoryPanelProps {
   brainActivity: BrainActivity[];
@@ -219,9 +220,15 @@ const MemoryPanel: React.FC<MemoryPanelProps> = ({ brainActivity, color = '#3B82
                         <span>{formatTime(activity.timestamp)}</span>
                         {activity.metadata && (
                           <>
-                            <span>• Energy: {activity.metadata.energy}%</span>
-                            <span>• Focus: {activity.metadata.focus}%</span>
-                            <span>• Mood: {activity.metadata.mood}</span>
+                            {typeof activity.metadata.energy === 'number' && (
+                              <span>• Energy: {formatPercentage(activity.metadata.energy)}</span>
+                            )}
+                            {typeof activity.metadata.focus === 'number' && (
+                              <span>• Focus: {formatPercentage(activity.metadata.focus)}</span>
+                            )}
+                            {typeof activity.metadata.mood === 'number' && (
+                              <span>• Mood: {formatPercentage(activity.metadata.mood, { signed: true })}</span>
+                            )}
                           </>
                         )}
                       </div>

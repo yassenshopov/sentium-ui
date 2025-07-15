@@ -16,6 +16,7 @@ import {
   TrendingDown,
   Minus
 } from "lucide-react";
+import { formatPercentage } from "../../lib/utils";
 
 interface StatePanelProps {
   brainState: BrainState;
@@ -75,101 +76,127 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <Card className="rounded-xl p-6 flex flex-col items-start w-full bg-gradient-to-br from-background to-secondary dark:from-background dark:to-secondary border">
+      <Card
+        className="rounded-xl p-6 flex flex-col items-start w-full border"
+        style={{
+          background: `linear-gradient(135deg, ${color}10, ${accentColor}10)`,
+          borderColor: color + '33',
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex items-center gap-3 mb-6"
+          className="flex items-center gap-3 mb-6 w-full"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-            <Activity className="w-5 h-5 text-primary-foreground" />
+          <div
+            className="p-2 rounded-lg"
+            style={{ background: `linear-gradient(135deg, ${color}, ${accentColor})` }}
+          >
+            <Battery className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground">
-              Neural State
-            </h2>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold" style={{ color }}>{'Neural State'}</h2>
             <p className="text-sm text-muted-foreground">Real-time brain metrics</p>
           </div>
         </motion.div>
 
         {/* ECG Brain Activity Visualization */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="w-full h-32 mb-6 relative"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="w-full mb-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-muted to-muted/50 dark:from-muted dark:to-muted/50 rounded-lg" />
-          <svg width="100%" height="100%" viewBox="0 0 300 120" className="absolute inset-0">
-            <defs>
-              <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={ecgColors.primary} stopOpacity="0.9" />
-                <stop offset="50%" stopColor={ecgColors.secondary} stopOpacity="0.7" />
-                <stop offset="100%" stopColor={ecgColors.primary} stopOpacity="0.9" />
-              </linearGradient>
-            </defs>
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Neural Activity</span>
+          </div>
+          
+          {/* Real-time brain activity visualization */}
+          <div className="relative h-16 bg-muted/30 rounded-lg overflow-hidden border">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 300 60"
+              preserveAspectRatio="none"
+            >
+              {/* Grid lines */}
+              <defs>
+                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke={ecgColors.grid} strokeWidth="0.5" opacity="0.3"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+              
+              {/* Baseline */}
+              <line x1="0" y1="30" x2="300" y2="30" stroke={ecgColors.baseline} strokeWidth="1" opacity="0.5"/>
+              
+              {/* Brain activity waveform */}
+              <motion.path
+                d={(() => {
+                  // Generate a dynamic path based on brain state
+                  const energy = brainState.energy / 100;
+                  const focus = brainState.focus / 100;
+                  const mood = (brainState.mood + 100) / 200;
+                  
+                  let path = "M 0 30";
+                  for (let i = 0; i <= 300; i += 2) {
+                    const x = i;
+                    const baseY = 30;
+                    const energyWave = Math.sin(i * 0.1 + Date.now() * 0.001) * 8 * energy;
+                    const focusWave = Math.sin(i * 0.05 + Date.now() * 0.002) * 4 * focus;
+                    const moodWave = Math.sin(i * 0.03 + Date.now() * 0.003) * 6 * mood;
+                    const y = baseY + energyWave + focusWave + moodWave;
+                    path += ` L ${x} ${y}`;
+                  }
+                  return path;
+                })()}
+                fill="none"
+                stroke={ecgColors.primary}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                animate={{
+                  d: (() => {
+                    const energy = brainState.energy / 100;
+                    const focus = brainState.focus / 100;
+                    const mood = (brainState.mood + 100) / 200;
+                    
+                    let path = "M 0 30";
+                    for (let i = 0; i <= 300; i += 2) {
+                      const x = i;
+                      const baseY = 30;
+                      const energyWave = Math.sin(i * 0.1 + Date.now() * 0.001) * 8 * energy;
+                      const focusWave = Math.sin(i * 0.05 + Date.now() * 0.002) * 4 * focus;
+                      const moodWave = Math.sin(i * 0.03 + Date.now() * 0.003) * 6 * mood;
+                      const y = baseY + energyWave + focusWave + moodWave;
+                      path += ` L ${x} ${y}`;
+                    }
+                    return path;
+                  })()
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+            </svg>
             
-            {/* ECG Base Line */}
-            <motion.path
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-              d="M0,60 L300,60"
-              stroke={ecgColors.baseline}
-              strokeWidth="1"
-              strokeDasharray="2,2"
-              fill="none"
-              opacity="0.6"
-            />
-            
-            {/* Continuous ECG Waveform */}
-            <motion.path
-              initial={{ x: 0 }}
-              animate={{ x: -300 }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity, 
-                ease: "linear" 
+            {/* Activity indicator */}
+            <motion.div
+              className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary"
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [1, 0.7, 1]
               }}
-              d="M0,60 L20,60 L25,40 L30,80 L35,60 L50,60 L55,45 L60,75 L65,60 L80,60 L85,35 L90,85 L95,60 L110,60 L115,50 L120,70 L125,60 L140,60 L145,30 L150,90 L155,60 L170,60 L175,55 L180,65 L185,60 L200,60 L205,25 L210,95 L215,60 L230,60 L235,60 L240,60 L245,40 L250,80 L255,60 L270,60 L275,45 L280,75 L285,60 L300,60 M300,60 L320,60 L325,40 L330,80 L335,60 L350,60 L355,45 L360,75 L365,60 L380,60 L385,35 L390,85 L395,60 L410,60 L415,50 L420,70 L425,60 L440,60 L445,30 L450,90 L455,60 L470,60 L475,55 L480,65 L485,60 L500,60 L505,25 L510,95 L515,60 L530,60 L535,60 L540,60 L545,40 L550,80 L555,60 L570,60 L575,45 L580,75 L585,60 L600,60"
-              stroke="url(#ecgGradient)"
-              strokeWidth="2.5"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            
-            {/* Moving Data Point */}
-            <motion.circle
-              animate={{ 
-                cx: [300, 320, 325, 330, 335, 350, 355, 360, 365, 380, 385, 390, 395, 410, 415, 420, 425, 440, 445, 450, 455, 470, 475, 480, 485, 500, 505, 510, 515, 530, 535, 540, 545, 550, 555, 570, 575, 580, 585, 600],
-                cy: [60, 60, 40, 80, 60, 60, 45, 75, 60, 60, 35, 85, 60, 60, 50, 70, 60, 60, 30, 90, 60, 60, 55, 65, 60, 60, 25, 95, 60, 60, 60, 60, 40, 80, 60, 60, 45, 75, 60, 60]
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity, 
-                ease: "linear",
-                times: [0, 0.05, 0.08, 0.1, 0.12, 0.17, 0.19, 0.22, 0.24, 0.27, 0.29, 0.32, 0.34, 0.37, 0.39, 0.42, 0.44, 0.47, 0.49, 0.52, 0.54, 0.57, 0.59, 0.62, 0.64, 0.67, 0.69, 0.72, 0.74, 0.77, 0.79, 0.82, 0.84, 0.87, 0.89, 0.92, 0.94, 0.97, 0.99, 1]
-              }}
-              r="2"
-              fill={ecgColors.primary}
-              opacity="0.8"
             />
-            
-
-            
-            {/* ECG Grid Lines */}
-            <motion.path
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.1 }}
-              transition={{ delay: 1, duration: 1 }}
-              d="M0,30 L300,30 M0,45 L300,45 M0,75 L300,75 M0,90 L300,90"
-              stroke={ecgColors.grid}
-              strokeWidth="0.5"
-              fill="none"
-            />
-          </svg>
+          </div>
         </motion.div>
 
         {/* State Metrics */}
@@ -178,6 +205,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
             {brainActivityData.map((metric, index) => {
               // Extract mood calculation logic to avoid repetition
               const moodPercentage = metric.name === "Mood" ? (metric.value / 200) * 100 : metric.value;
+              const isMood = metric.name === "Mood";
               
               return (
                 <motion.div
@@ -210,7 +238,9 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono">
-                        {metric.name === "Mood" ? brainState.mood : Math.round(metric.value)}
+                        {isMood
+                          ? formatPercentage(brainState.mood, { signed: true })
+                          : formatPercentage(metric.value)}
                       </span>
                       {metric.name === "Energy" && brainState.energy < 30 && (
                         <motion.div

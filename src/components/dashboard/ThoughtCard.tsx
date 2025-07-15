@@ -16,6 +16,7 @@ import {
   ChevronUp,
   Palette
 } from "lucide-react";
+import { formatPercentage } from "../../lib/utils";
 
 interface ThoughtCardProps {
   thought: Thought;
@@ -385,15 +386,15 @@ const ThoughtCard: React.FC<ThoughtCardProps> = ({ thought, viewStyle = 'streami
                     <div className="grid grid-cols-3 gap-4 text-xs">
                       <div className="flex items-center gap-1">
                         <Zap className="w-3 h-3 text-blue-500" />
-                        <span>Energy: {thought.metadata.energy}%</span>
+                        <span>Energy: {typeof thought.metadata?.energy === 'number' ? formatPercentage(thought.metadata.energy) : '-'}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Target className="w-3 h-3 text-green-500" />
-                        <span>Focus: {thought.metadata.focus}%</span>
+                        <span>Focus: {typeof thought.metadata?.focus === 'number' ? formatPercentage(thought.metadata.focus) : '-'}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        {getMoodIcon(thought.metadata.mood)}
-                        <span>Mood: {thought.metadata.mood}</span>
+                        {getMoodIcon(thought.metadata?.mood)}
+                        <span>Mood: {typeof thought.metadata?.mood === 'number' ? formatPercentage(thought.metadata.mood, { signed: true }) : '-'}</span>
                       </div>
                     </div>
                   </motion.div>
