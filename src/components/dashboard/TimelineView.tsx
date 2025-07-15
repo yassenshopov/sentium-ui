@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -25,6 +25,8 @@ import {
   Eye,
   Moon
 } from "lucide-react";
+import { formatPercentage, stableValue, stablePercentage, stableMood } from "../../lib/utils";
+import { BrainState, BrainActivity } from "../../lib/types";
 
 interface TimelineEvent {
   id: string;
@@ -46,8 +48,8 @@ interface TimelineEvent {
 }
 
 interface TimelineViewProps {
-  brainState: any;
-  brainActivity: any[];
+  brainState: BrainState;
+  brainActivity: BrainActivity[];
   color?: string;
   accentColor?: string;
 }
@@ -88,7 +90,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, 
           type: activityInfo.type,
           title: activityInfo.title,
           description: activity.content,
-          impact: Math.floor(Math.random() * 50) + 25,
+          impact: stableValue(`${activity.id}-${activity.type}-${activity.timestamp}`, 25, 75),
           category: activity.type,
           color: color,
           icon: activityInfo.icon,
@@ -155,11 +157,11 @@ const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, 
         color: accentColor,
         icon: milestone.icon,
         metadata: {
-          energy: Math.floor(Math.random() * 100),
-          focus: Math.floor(Math.random() * 100),
-          mood: Math.floor(Math.random() * 200) - 100,
-          thoughts: Math.floor(Math.random() * 100),
-          memories: Math.floor(Math.random() * 50)
+          energy: stablePercentage(`milestone-${index}-energy`),
+          focus: stablePercentage(`milestone-${index}-focus`),
+          mood: stableMood(`milestone-${index}-mood`),
+          thoughts: stablePercentage(`milestone-${index}-thoughts`),
+          memories: stableValue(`milestone-${index}-memories`, 0, 50)
         }
       });
     });
@@ -198,20 +200,20 @@ const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, 
   };
 
   // Playback controls
-  const togglePlayback = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const togglePlayback = useCallback(() => {
+    setIsPlaying(prev => !prev);
+  }, []);
 
-  const resetPlayback = () => {
+  const resetPlayback = useCallback(() => {
     setIsPlaying(false);
     setCurrentEventIndex(0);
     setCurrentTime(0);
-  };
+  }, []);
 
-  const skipToEvent = (index: number) => {
+  const skipToEvent = useCallback((index: number) => {
     setCurrentEventIndex(index);
     setCurrentTime(index);
-  };
+  }, []);
 
   // Playback effect
   useEffect(() => {
@@ -283,7 +285,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, 
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [currentEventIndex, filteredEvents.length]);
+  }, [currentEventIndex, filteredEvents.length, togglePlayback, resetPlayback, skipToEvent]);
 
   return (
     <motion.div
@@ -639,14 +641,14 @@ const TimelineView: React.FC<TimelineViewProps> = ({ brainState, brainActivity, 
                         {/* Metadata */}
                         {event.metadata && (
                           <div className="flex flex-wrap gap-2 text-xs">
-                            {event.metadata.energy !== undefined && (
-                              <span className="text-muted-foreground">Energy: {event.metadata.energy}%</span>
+                            {typeof event.metadata.energy === 'number' && (
+                              <span className="text-muted-foreground">Energy: {formatPercentage(event.metadata.energy)}</span>
                             )}
-                            {event.metadata.focus !== undefined && (
-                              <span className="text-muted-foreground">Focus: {event.metadata.focus}%</span>
+                            {typeof event.metadata.focus === 'number' && (
+                              <span className="text-muted-foreground">Focus: {formatPercentage(event.metadata.focus)}</span>
                             )}
-                            {event.metadata.mood !== undefined && (
-                              <span className="text-muted-foreground">Mood: {event.metadata.mood > 0 ? '+' : ''}{event.metadata.mood}</span>
+                            {typeof event.metadata.mood === 'number' && (
+                              <span className="text-muted-foreground">Mood: {formatPercentage(event.metadata.mood, { signed: true })}</span>
                             )}
                           </div>
                         )}

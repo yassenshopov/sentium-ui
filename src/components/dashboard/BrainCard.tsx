@@ -27,6 +27,7 @@ import {
   Smile
 } from "lucide-react";
 import { timestampHelpers } from "../../lib/types";
+import { formatPercentage } from "../../lib/utils";
 
 // Map icon string to Lucide icon component
 const iconMap: Record<string, React.ElementType> = {
@@ -130,17 +131,17 @@ const BrainCard: React.FC<BrainCardProps> = ({ brain, onSelect, isSelected = fal
           <div className="flex gap-2 mb-2">
             {brain.currentState.energy !== undefined && (
               <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
-                <Zap className="w-3 h-3" /> {brain.currentState.energy}%
+                <Zap className="w-3 h-3" /> {formatPercentage(brain.currentState.energy)}
               </span>
             )}
             {brain.currentState.focus !== undefined && (
               <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
-                <Target className="w-3 h-3" /> {brain.currentState.focus}%
+                <Target className="w-3 h-3" /> {formatPercentage(brain.currentState.focus)}
               </span>
             )}
             {brain.currentState.mood !== undefined && (
               <span className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" style={{ backgroundColor: brain.accentColor + '22', color: brain.accentColor }}>
-                <Smile className="w-3 h-3" /> {brain.currentState.mood > 0 ? '+' : ''}{brain.currentState.mood}
+                <Smile className="w-3 h-3" /> {formatPercentage(brain.currentState.mood, { signed: true })}
               </span>
             )}
           </div>

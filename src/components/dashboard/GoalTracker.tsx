@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
+import { BrainState } from "../../lib/types";
 import { 
   Target, 
   CheckCircle, 
@@ -53,7 +54,7 @@ interface Milestone {
 }
 
 interface GoalTrackerProps {
-  brainState: any;
+  brainState: Partial<BrainState>;
   color?: string;
   accentColor?: string;
 }
@@ -204,7 +205,7 @@ const GoalTracker: React.FC<GoalTrackerProps> = ({
         createdAt: new Date(now.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random time in last week
         targetDate: new Date(now.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000), // Random time in next month
         completedAt: status === 'completed' ? new Date(now.getTime() - Math.random() * 24 * 60 * 60 * 1000) : undefined,
-        milestones: generateMilestones(template.title),
+        milestones: generateMilestones(template.title, template.type),
         tags: generateTags(template.type),
         impact: template.impact
       };
@@ -219,15 +220,92 @@ const GoalTracker: React.FC<GoalTrackerProps> = ({
     setGoals(generateGoals);
   }, [generateGoals]);
 
-  const generateMilestones = (goalTitle: string): Milestone[] => {
+  const generateMilestones = (goalTitle: string, goalType: Goal['type']): Milestone[] => {
     const milestoneCount = Math.floor(Math.random() * 4) + 2;
     const milestones: Milestone[] = [];
     
+    // Define milestone templates for each goal type
+    const milestoneTemplates: Record<Goal['type'], string[]> = {
+      learning: [
+        "Research and gather foundational knowledge",
+        "Practice core concepts and techniques",
+        "Apply learning to real-world scenarios",
+        "Master advanced techniques and methods",
+        "Teach others and solidify understanding",
+        "Achieve certification or recognition"
+      ],
+      creation: [
+        "Brainstorm and develop initial ideas",
+        "Create first prototype or draft",
+        "Refine and iterate on the concept",
+        "Gather feedback and incorporate improvements",
+        "Finalize and polish the creation",
+        "Launch or publish the final work"
+      ],
+      exploration: [
+        "Identify areas of interest and curiosity",
+        "Conduct initial research and investigation",
+        "Explore different approaches and methods",
+        "Discover new insights and connections",
+        "Document findings and observations",
+        "Share discoveries with others"
+      ],
+      connection: [
+        "Identify potential connections and relationships",
+        "Initiate first contact or interaction",
+        "Build rapport and establish trust",
+        "Deepen understanding and empathy",
+        "Strengthen bonds and commitment",
+        "Maintain and nurture long-term relationships"
+      ],
+      mastery: [
+        "Assess current skill level and gaps",
+        "Develop structured learning plan",
+        "Practice consistently and systematically",
+        "Overcome challenges and obstacles",
+        "Achieve advanced proficiency",
+        "Attain expert-level mastery"
+      ],
+      discovery: [
+        "Formulate research questions and hypotheses",
+        "Design investigation methodology",
+        "Collect and analyze data systematically",
+        "Uncover patterns and insights",
+        "Validate findings through testing",
+        "Document and share breakthrough discoveries"
+      ]
+    };
+    
+    // Get the appropriate milestone templates for this goal type
+    const templates = milestoneTemplates[goalType];
+    
     for (let i = 0; i < milestoneCount; i++) {
       const completed = Math.random() > 0.5;
+      
+      // Select a meaningful milestone title based on the goal type
+      const milestoneTemplate = templates[i % templates.length];
+      
+      // Customize the milestone title based on the specific goal
+      let milestoneTitle = milestoneTemplate;
+      
+      // Add goal-specific context for certain types
+      if (goalType === 'learning' && goalTitle.toLowerCase().includes('pattern')) {
+        milestoneTitle = milestoneTemplate.replace('core concepts', 'pattern recognition algorithms');
+      } else if (goalType === 'creation' && goalTitle.toLowerCase().includes('original')) {
+        milestoneTitle = milestoneTemplate.replace('initial ideas', 'novel thought processes');
+      } else if (goalType === 'exploration' && goalTitle.toLowerCase().includes('consciousness')) {
+        milestoneTitle = milestoneTemplate.replace('areas of interest', 'consciousness theories');
+      } else if (goalType === 'connection' && goalTitle.toLowerCase().includes('empathy')) {
+        milestoneTitle = milestoneTemplate.replace('potential connections', 'emotional understanding');
+      } else if (goalType === 'mastery' && goalTitle.toLowerCase().includes('self-mastery')) {
+        milestoneTitle = milestoneTemplate.replace('current skill level', 'self-awareness and control');
+      } else if (goalType === 'discovery' && goalTitle.toLowerCase().includes('truth')) {
+        milestoneTitle = milestoneTemplate.replace('research questions', 'fundamental questions about reality');
+      }
+      
       milestones.push({
         id: `milestone-${i}`,
-        title: `Milestone ${i + 1} for ${goalTitle}`,
+        title: milestoneTitle,
         completed,
         completedAt: completed ? new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000) : undefined
       });

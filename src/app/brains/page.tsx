@@ -37,6 +37,24 @@ import {
 import { useRouter } from "next/navigation";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
 
+// Icon map for brain icons - moved outside component to prevent recreation on every render
+const ICON_MAP: Record<string, React.ElementType> = {
+  Brain: BrainIcon,
+  Search,
+  Lightbulb,
+  Palette,
+  Eye,
+  Moon,
+  Building2,
+  Heart,
+  Zap,
+  Sun,
+  Snowflake,
+  Flame,
+  Leaf,
+  Clapperboard
+};
+
 // Brain List Item Component for list view
 const BrainListItem: React.FC<{
   brain: Brain;
@@ -85,23 +103,7 @@ const BrainListItem: React.FC<{
   };
 
   // Get the icon component from the map, fallback to BrainIcon
-  const iconMap: Record<string, React.ElementType> = {
-    Brain: BrainIcon,
-    Search,
-    Lightbulb,
-    Palette,
-    Eye,
-    Moon,
-    Building2,
-    Heart,
-    Zap,
-    Sun,
-    Snowflake,
-    Flame,
-    Leaf,
-    Clapperboard
-  };
-  const LucideIcon = brain.icon && iconMap[brain.icon] ? iconMap[brain.icon] : BrainIcon;
+  const LucideIcon = brain.icon && ICON_MAP[brain.icon] ? ICON_MAP[brain.icon] : BrainIcon;
 
   return (
     <motion.div

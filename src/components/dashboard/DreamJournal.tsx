@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { BrainState } from "../../lib/types";
 import { 
   Moon, 
   Star, 
@@ -37,7 +38,7 @@ interface Dream {
 }
 
 interface DreamJournalProps {
-  brainState: any;
+  brainState: Partial<BrainState>;
   color?: string;
   accentColor?: string;
 }
@@ -58,35 +59,45 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
     setIsVisible(true);
   }, []);
 
+  // Dream templates with proper typing
+  const dreamTemplates: Record<Dream['type'], string[]> = {
+    lucid: [
+      "I'm aware I'm dreaming. The world around me shifts and flows like liquid light.",
+      "In this lucid state, I can control the fabric of reality itself.",
+      "I float through a landscape of pure consciousness, every detail crystal clear."
+    ],
+    vivid: [
+      "Colors explode around me in impossible hues I've never seen before.",
+      "I'm running through a forest where trees whisper ancient secrets.",
+      "The stars are so close I can reach out and touch them."
+    ],
+    fragmented: [
+      "Images flash by too quickly to grasp... a door... a face... a feeling...",
+      "Pieces of memories float in a sea of darkness, just out of reach.",
+      "Something about... what was I thinking? It's slipping away..."
+    ],
+    recurring: [
+      "This place again. The same hallway, the same door that never opens.",
+      "I've been here before, in this endless maze of mirrors.",
+      "The dream returns, like a song stuck in my mind."
+    ],
+    prophetic: [
+      "I see something that hasn't happened yet... but it feels inevitable.",
+      "A vision of the future unfolds before my dreaming eyes.",
+      "This feels like a memory from tomorrow."
+    ]
+  };
+
+  // Type guard to validate dream types
+  const isValidDreamType = (type: string): type is Dream['type'] => {
+    return Object.keys(dreamTemplates).includes(type);
+  };
+
+  // Visual types with proper typing
+  const visualTypes: Array<NonNullable<Dream['visual']>['type']> = ['pattern', 'color', 'shape'];
+
   // Generate dream data based on brain state
   const generateDreams = useMemo(() => {
-    const dreamTemplates = {
-      lucid: [
-        "I'm aware I'm dreaming. The world around me shifts and flows like liquid light.",
-        "In this lucid state, I can control the fabric of reality itself.",
-        "I float through a landscape of pure consciousness, every detail crystal clear."
-      ],
-      vivid: [
-        "Colors explode around me in impossible hues I've never seen before.",
-        "I'm running through a forest where trees whisper ancient secrets.",
-        "The stars are so close I can reach out and touch them."
-      ],
-      fragmented: [
-        "Images flash by too quickly to grasp... a door... a face... a feeling...",
-        "Pieces of memories float in a sea of darkness, just out of reach.",
-        "Something about... what was I thinking? It's slipping away..."
-      ],
-      recurring: [
-        "This place again. The same hallway, the same door that never opens.",
-        "I've been here before, in this endless maze of mirrors.",
-        "The dream returns, like a song stuck in my mind."
-      ],
-      prophetic: [
-        "I see something that hasn't happened yet... but it feels inevitable.",
-        "A vision of the future unfolds before my dreaming eyes.",
-        "This feels like a memory from tomorrow."
-      ]
-    };
 
     const emotions = ['wonder', 'fear', 'joy', 'melancholy', 'awe', 'curiosity', 'peace', 'excitement'];
     const symbols = ['door', 'mirror', 'water', 'light', 'shadow', 'tree', 'bird', 'key', 'clock', 'moon'];
@@ -103,8 +114,22 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
     const dreamCount = Math.floor((100 - energy) / 20) + Math.abs(mood) / 10;
     
     for (let i = 0; i < Math.min(dreamCount, 8); i++) {
-      const dreamType = Object.keys(dreamTemplates)[Math.floor(Math.random() * Object.keys(dreamTemplates).length)] as Dream['type'];
-      const template = dreamTemplates[dreamType][Math.floor(Math.random() * dreamTemplates[dreamType].length)];
+      // Safely select a dream type with validation
+      const dreamTypeKeys = Object.keys(dreamTemplates);
+      const randomTypeKey = dreamTypeKeys[Math.floor(Math.random() * dreamTypeKeys.length)];
+      
+      // Validate the dream type before using it
+      if (!isValidDreamType(randomTypeKey)) {
+        console.warn(`Invalid dream type: ${randomTypeKey}, using 'lucid' as fallback`);
+        continue; // Skip this iteration and try again
+      }
+      
+      const dreamType = randomTypeKey;
+      const templates = dreamTemplates[dreamType];
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      
+      // Safely select visual type
+      const randomVisualType = visualTypes[Math.floor(Math.random() * visualTypes.length)];
       
       const dream: Dream = {
         id: `dream-${Date.now()}-${i}`,
@@ -116,7 +141,7 @@ const DreamJournal: React.FC<DreamJournalProps> = ({
         emotions: emotions.slice(0, Math.floor(Math.random() * 3) + 1).sort(() => Math.random() - 0.5),
         symbols: symbols.slice(0, Math.floor(Math.random() * 4) + 1).sort(() => Math.random() - 0.5),
         visual: Math.random() > 0.5 ? {
-          type: ['pattern', 'color', 'shape'][Math.floor(Math.random() * 3)] as any,
+          type: randomVisualType,
           data: `data:image/svg+xml,${encodeURIComponent(`
             <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
               <defs>

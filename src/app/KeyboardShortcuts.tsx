@@ -104,7 +104,7 @@ export default function KeyboardShortcuts() {
         <Button
           variant="ghost"
           size="sm"
-          className="fixed bottom-4 right-4 z-50 opacity-60 hover:opacity-100 transition-opacity"
+          className="fixed bottom-4 right-4 z-50 opacity-60 hover:opacity-100 transition-opacity hidden md:flex"
           onClick={() => setIsOpen(true)}
         >
           <Keyboard className="w-4 h-4 mr-2" />

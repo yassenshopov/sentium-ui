@@ -364,16 +364,18 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-6">
+    <div className="w-full max-w-6xl mx-auto md:px-6">
       {/* Tab Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="flex items-center justify-center mb-8"
+        className="relative flex items-center justify-center mb-8"
       >
-        <Card className="p-2 bg-muted/30 border-border/50">
-          <div className="flex items-center gap-1 md:gap-2">
+        {/* Left fade for scroll hint */}
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-6 z-10 hidden sm:block" style={{background: 'linear-gradient(to right, var(--background), transparent)'}} />
+        <Card className="p-2 bg-muted/30 border-border/50 mx-auto overflow-x-auto">
+          <div className="flex items-center gap-1 md:gap-2 flex-nowrap overflow-x-auto scrollbar-thin scrollbar-thumb-muted/40 scrollbar-track-transparent w-max justify-center mx-auto">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               const isHovered = hoveredTab === tab.id;
@@ -383,7 +385,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                   onClick={() => setActiveTab(tab.id)}
                   onMouseEnter={() => setHoveredTab(tab.id)}
                   onMouseLeave={() => setHoveredTab(null)}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all text-sm focus:outline-none relative overflow-hidden ${
+                  className={`flex items-center gap-2 px-3 md:px-5 py-2 rounded-xl font-semibold transition-all text-xs md:text-sm focus:outline-none relative overflow-hidden whitespace-nowrap ${
                     isActive
                       ? ''
                       : 'hover:shadow-md'
@@ -408,10 +410,10 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                   }}
                 >
                   {tab.icon}
-                  <span>{tab.label}</span>
+                  <span className="hidden xs:inline md:inline">{tab.label}</span>
                   {tab.badge > 0 && (
                     <span
-                      className="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold transition-all"
+                      className="hidden md:inline ml-0.5 px-1 md:px-2 py-0.5 rounded-full text-[10px] md:text-xs font-semibold transition-all min-w-[1.25em] text-center"
                       style={isActive ? {
                         background: '#fff',
                         color: color
@@ -420,7 +422,7 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
                         color: color
                       }}
                     >
-                      {tab.badge}
+                      {tab.badge > 9 ? '9+' : tab.badge}
                     </span>
                   )}
                   {isActive && (
@@ -434,6 +436,8 @@ const TabbedInterface: React.FC<TabbedInterfaceProps> = ({
             })}
           </div>
         </Card>
+        {/* Right fade for scroll hint */}
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-6 z-10 hidden sm:block" style={{background: 'linear-gradient(to left, var(--background), transparent)'}} />
       </motion.div>
 
       {/* Tab Content */}

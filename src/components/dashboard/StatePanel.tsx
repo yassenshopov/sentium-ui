@@ -16,6 +16,7 @@ import {
   TrendingDown,
   Minus
 } from "lucide-react";
+import { formatPercentage } from "../../lib/utils";
 
 interface StatePanelProps {
   brainState: BrainState;
@@ -204,6 +205,7 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
             {brainActivityData.map((metric, index) => {
               // Extract mood calculation logic to avoid repetition
               const moodPercentage = metric.name === "Mood" ? (metric.value / 200) * 100 : metric.value;
+              const isMood = metric.name === "Mood";
               
               return (
                 <motion.div
@@ -236,7 +238,9 @@ const StatePanel: React.FC<StatePanelProps> = ({ brainState, color = '#3B82F6', 
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono">
-                        {metric.name === "Mood" ? brainState.mood : Math.round(metric.value)}
+                        {isMood
+                          ? formatPercentage(brainState.mood, { signed: true })
+                          : formatPercentage(metric.value)}
                       </span>
                       {metric.name === "Energy" && brainState.energy < 30 && (
                         <motion.div
