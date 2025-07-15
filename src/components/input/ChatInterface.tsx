@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -86,7 +86,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [openMetaGroupIdx, setOpenMetaGroupIdx] = useState<number | null>(null);
-  const groupedMessages = groupMessages(messages);
+  const groupedMessages = useMemo(() => groupMessages(messages), [messages]);
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -237,6 +237,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   onClick={() => {
                     if (window.innerWidth < 768) setOpenMetaGroupIdx(openMetaGroupIdx === groupIdx ? null : groupIdx);
                   }}
+                  onKeyDown={(e) => {
+                    if (window.innerWidth < 768 && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault();
+                      setOpenMetaGroupIdx(openMetaGroupIdx === groupIdx ? null : groupIdx);
+                    }
+                  }}
+                  role={window.innerWidth < 768 ? "button" : undefined}
+                  tabIndex={window.innerWidth < 768 ? 0 : undefined}
                   style={{ cursor: window.innerWidth < 768 ? 'pointer' : 'default' }}
                 >
                   {first.type === 'brain' && (
